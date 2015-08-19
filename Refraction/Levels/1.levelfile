@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Level>
+	<Board>
+		<Row>
+			<Outputter Direction="Up" Colour="Red"/>
+			<Outputter Direction="Up" Colour="Blue"/>
+		</Row>
+		<EmptyRow/>
+		<EmptyRow/>
+		<Row>
+			<Receiver Direction="UpLeft" Colour="Blue"/>
+			<Receiver Direction="UpRight" Colour="Red"/>
+		</Row>
+	</Board>
+	<Inventory>
+		<Tile Type="RF_UxL_UL" Count="1"/>
+		<Tile Type="RF_UxR_UR" Count="1"/>
+		<InactivateRemaining/>
+	</Inventory>
+</Level>

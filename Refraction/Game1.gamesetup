@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<GameSetup>
+  <ContentFolder>Content</ContentFolder>
+  <WindowResolution>960x768</WindowResolution>
+
+  <Fullscreen>false</Fullscreen>
+  <AllowFullscreen>true</AllowFullscreen>
+
+  <MouseVisible>true</MouseVisible>
+  <AllowMouseVisibilityToggle>true</AllowMouseVisibilityToggle>
+
+  <Borderless>false</Borderless>
+  <AllowBorderlessnessToggle>true</AllowBorderlessnessToggle>
+
+  <BackgroundFillColour>Black</BackgroundFillColour>
+</GameSetup>

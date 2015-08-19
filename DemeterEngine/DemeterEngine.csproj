@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{54B0413E-4F8F-4061-A283-9DDC6F67D0DD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DemeterEngine</RootNamespace>
+    <AssemblyName>DemeterEngine</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="MonoGame.Framework">
+      <HintPath>$(MSBuildProgramFiles32)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ArtManager.cs" />
+    <Compile Include="ChronometricObject.cs" />
+    <Compile Include="Collision\Collidable.cs" />
+    <Compile Include="Collision\CollisionPrecedences.cs" />
+    <Compile Include="Collision\CollisionResponse.cs" />
+    <Compile Include="Collision\EllipseCollider.cs" />
+    <Compile Include="Collision\PointCollider.cs" />
+    <Compile Include="Collision\RectCollider.cs" />
+    <Compile Include="Collision\SegmentCollider.cs" />
+    <Compile Include="DisplayManager.cs" />
+    <Compile Include="DisplayManagerException.cs" />
+    <Compile Include="Effectors\Effector.cs" />
+    <Compile Include="Effectors\EffectorException.cs" />
+    <Compile Include="Extensions\ArrayExtensions.cs" />
+    <Compile Include="Extensions\XmlElementExtensions.cs" />
+    <Compile Include="GlobalGameTimer.cs" />
+    <Compile Include="Graphics\Sprite.cs" />
+    <Compile Include="Input\KeyboardInput.cs" />
+    <Compile Include="Input\MouseInput.cs" />
+    <Compile Include="Input\MouseButtons.cs" />
+    <Compile Include="Maths\EllipseUtils.cs" />
+    <Compile Include="Maths\Integrator.cs" />
+    <Compile Include="Maths\LinearUtils.cs" />
+    <Compile Include="Maths\MathConstants.cs" />
+    <Compile Include="Maths\MathUtils.cs" />
+    <Compile Include="Maths\ODESolver.cs" />
+    <Compile Include="Maths\RectUtils.cs" />
+    <Compile Include="Maths\RootSolver.cs" />
+    <Compile Include="Maths\SpecialFunctions.cs" />
+    <Compile Include="Maths\VectorUtils.cs" />
+    <Compile Include="Multiforms\Form.cs" />
+    <Compile Include="Multiforms\Forms\ButtonForm.cs" />
+    <Compile Include="Multiforms\Forms\KeyboardButtonNavigatorForm.cs" />
+    <Compile Include="Multiforms\Forms\SimpleTextForm.cs" />
+    <Compile Include="Multiforms\FormTransmissionData.cs" />
+    <Compile Include="Multiforms\InterformTransmissionData.cs" />
+    <Compile Include="Multiforms\Multiform.cs" />
+    <Compile Include="Multiforms\MultiformTransmissionData.cs" />
+    <Compile Include="Multiforms\MultiformException.cs" />
+    <Compile Include="Multiforms\MultiformManager.cs" />
+    <Compile Include="Resolution.cs" />
+    <Compile Include="GameKernel.cs" />
+    <Compile Include="GameSetupFileException.cs" />
+    <Compile Include="GameSetupReader.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\AttributeContainer.cs" />
+    <Compile Include="Utils\PropertyCache.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
