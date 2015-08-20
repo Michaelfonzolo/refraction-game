@@ -27,7 +27,10 @@ namespace Refraction_V2
 		/// </summary>
 		internal static string[] SequentialLevels { get; private set; }
 
-		internal readonly static List<int> CompletedLevels = new List<int>();
+		/// <summary>
+		/// The list of levels the player has completed.
+		/// </summary>
+		internal readonly static HashSet<int> CompletedLevels = new HashSet<int>();
 
 		private static int LevelToInt(string levelName)
 		{
@@ -51,7 +54,7 @@ namespace Refraction_V2
 			var configElement         = roots[1] as XmlElement;
 			var completedLevelElement = configElement.FindChild(COMPLETED_LEVELS_ELEMENT);
 
-			foreach (var num in completedLevelElement.InnerText.Split(','))
+			foreach (var num in completedLevelElement.InnerText.Trim().Split(' '))
 			{
 				CompletedLevels.Add(Convert.ToInt32(num.Trim()));
 			}
@@ -65,9 +68,7 @@ namespace Refraction_V2
 			foreach (var levelNum in LoadedLevelManager.CompletedLevels)
 			{
 				i++;
-				completedLevelsText.Append(levelNum.ToString());
-				if (i < LoadedLevelManager.CompletedLevels.Count)
-					completedLevelsText.Append(", ");
+				completedLevelsText.Append(levelNum.ToString() + " ");
 			}
 
 			writer.WriteElementString(COMPLETED_LEVELS_ELEMENT, completedLevelsText.ToString());

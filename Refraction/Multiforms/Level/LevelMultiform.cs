@@ -94,6 +94,9 @@ namespace Refraction_V2.Multiforms.Level
 			{
 				Console.WriteLine("Yay!");
 
+				if (LevelNameInfo.Sequential)
+					LoadedLevelManager.CompletedLevels.Add(LevelNameInfo.LevelNumber.Value);
+
 				var data = new MultiformTransmissionData(MultiformName);
 				data.SetAttr<LevelNameInfo>("LevelNameInfo", LevelNameInfo);
 

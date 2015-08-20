@@ -78,6 +78,7 @@
     <Compile Include="Multiforms\Form.cs" />
     <Compile Include="Multiforms\Forms\ButtonForm.cs" />
     <Compile Include="Multiforms\Forms\KeyboardButtonNavigatorForm.cs" />
+    <Compile Include="Multiforms\Forms\ScrollBarForm.cs" />
     <Compile Include="Multiforms\Forms\SimpleTextForm.cs" />
     <Compile Include="Multiforms\FormTransmissionData.cs" />
     <Compile Include="Multiforms\InterformTransmissionData.cs" />

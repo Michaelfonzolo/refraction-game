@@ -44,5 +44,13 @@ namespace DemeterEngine.Maths
 			return ((n % M) + M) % M;
 		}
 
+		/// <summary>
+		/// Clamp function for doubles (since XNA's a little bitch and uses floats).
+		/// </summary>
+		public static double Clamp(double x, double lo, double hi)
+		{
+			return x >= hi ? hi : x <= lo ? lo : x;
+		}
+
 	}
 }

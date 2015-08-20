@@ -145,14 +145,21 @@ namespace DemeterEngine.Multiforms.Forms
 			SelectedButtonIndex = null;
 		}
 
+		protected virtual bool ValidKeyPressedState(Keys key)
+		{
+			return KeyboardInput.IsClicked(key) ||
+				  (KeyboardInput.IsHeld(key, 600d) &&
+				  (KeyboardInput.FramesSinceKeyPressed[KeyboardInput.KeyToInt(key)] - 600d) % 4 == 0);
+		}
+
 		public override void Update()
 		{
 			base.Update();
 
-			if (KeyboardInput.IsClicked(NavigateLeft) || KeyboardInput.IsHeld(NavigateLeft, 600d))
+			if (ValidKeyPressedState(NavigateLeft))
 				Navigate(-1);
 
-			if (KeyboardInput.IsClicked(NavigateRight) || KeyboardInput.IsHeld(NavigateRight, 600d))
+			if (ValidKeyPressedState(NavigateRight))
 				Navigate(1);
 
 			if (SelectedButtonIndex.HasValue)

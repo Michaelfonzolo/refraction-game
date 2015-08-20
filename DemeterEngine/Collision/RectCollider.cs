@@ -139,6 +139,26 @@ namespace DemeterEngine.Collision
         /// </summary>
         public double H { get; private set; }
 
+		/// <summary>
+		/// The y-value of the top of this rectangle (relative to the game world).
+		/// </summary>
+		public double Top { get { return Y; } }
+
+		/// <summary>
+		/// The y-value of the bottom of this rectangle (relative to the game world).
+		/// </summary>
+		public double Bottom { get { return Y + H; } }
+
+		/// <summary>
+		/// The x-value of the left side of this rectangle.
+		/// </summary>
+		public double Left { get { return X; } }
+
+		/// <summary>
+		/// The x-value of the right side of this rectangle.
+		/// </summary>
+		public double Right { get { return X + W; } }
+
         /// <summary>
         /// This rectangle's bounding box (lol gee I wonder what it is).
         /// </summary>

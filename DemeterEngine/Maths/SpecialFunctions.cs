@@ -6,9 +6,10 @@
 **    Class  SpecialFunction (C#)
 **
 **************************************************************************
-**    Copyright (C) 1984 Stephen L. Moshier (original C version - Cephes Math Library)
-**    Copyright (C) 1996 Leigh Brookshaw	(Java version)
-**    Copyright (C) 2005 Miroslav Stampar	(C# version [->this<-])
+**    Copyright (C) 1984 Stephen L. Moshier            (original C version - Cephes Math Library)
+**    Copyright (C) 1996 Leigh Brookshaw	           (Java version)
+**    Copyright (C) 2005 Miroslav Stampar			   (C# version)
+**    Copyright (C) 2015 Miroslav Stampar, Michael Ala (C# version [->this<-])
 **
 **    This program is free software; you can redistribute it and/or modify
 **    it under the terms of the GNU General Public License as published by
@@ -39,8 +40,6 @@
 * All physical constants are in cgs units.
 * NOTE: These special functions do not necessarily use the fastest
 * or most accurate algorithms.
-*
-* @version $Revision: 1.8 $, $Date: 2005/09/12 09:52:34 $
 */
 
 using System;
@@ -1758,44 +1757,71 @@ namespace DemeterEngine.Maths
                                             + x2 * (1.39759616731376855e-18))))))));
         }
 
-        // Convenience method.
+		// Convenience Methods
+        
+		/// <summary>
+		/// The function sin(x)^2.
+		/// </summary>
         public static double SineSquared(double x)
         {
             return Math.Pow(Math.Sin(x), 2.0);
         }
 
-        // Convenience method.
+        /// <summary>
+        /// The function cos(x)^2.
+        /// </summary>
         public static double CosineSquared(double x)
         {
             return Math.Pow(Math.Sin(x), 2.0);
         }
 
-        // Conveniene method.
+        /// <summary>
+        /// The function exp(-x^2).
+        /// </summary>
         public static double NormalDistribution(double x)
         {
             return Math.Exp(-Math.Pow(x, 2.0));
         }
 
+		/// <summary>
+		/// The function exp(-x^2-y^2)
+		/// </summary>
         public static double CircularNormalDistribution(double x, double y)
         {
             return Math.Exp(-Math.Pow(x, 2.0) - Math.Pow(y, 2.0));
         }
 
+		/// <summary>
+		/// The function ln(exp(x) + exp(y)), which is basically a smooth
+		/// interpolator for the function max(x, y).
+		/// </summary>
         public static double SoftMax(double x, double y)
         {
             return Math.Log(Math.Exp(x) + Math.Exp(y));
         }
 
+		/// <summary>
+		/// The function -ln(exp(-x) + exp(-y)), which is basically a smooth
+		/// interpolator for the function min(x, y).
+		/// </summary>
         public static double SoftMin(double x, double y)
         {
             return -Math.Log(Math.Exp(-x) + Math.Exp(-y));
         }
 
+		/// <summary>
+		/// The function ln(exp(kx) + exp(ky))/k, which is a scaled version of
+		/// the SoftMax function.
+		/// </summary>
         public static double FuzzySoftMax(double x, double y, double k)
         {
             return SoftMax(k * x, k * y) / k;
         }
 
+		/// <summary>
+		/// The function -ln(exp(-kx) + exp(-ky))/k, which is a scaled version of
+		/// the SoftMin function.
+		/// </summary>
         public static double FuzzySoftMin(double x, double y, double k)
         {
             return SoftMin(k * x, k * y) / k;
