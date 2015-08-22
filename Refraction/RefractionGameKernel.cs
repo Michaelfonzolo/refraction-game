@@ -35,6 +35,8 @@
 using DemeterEngine;
 using Refraction_V2.Multiforms.Level;
 using Refraction_V2.Multiforms.LevelComplete;
+using Refraction_V2.Multiforms.LevelSelect;
+using Refraction_V2.Multiforms.MainMenu;
 
 #endregion
 
@@ -53,10 +55,12 @@ namespace Refraction_V2
 
         public override void LoadMultiforms()
         {
-            MultiformManager.RegisterMultiform(LevelMultiform.MultiformName, new LevelMultiform());
-			MultiformManager.RegisterMultiform(LevelCompleteMultiform.MultiformName, new LevelCompleteMultiform());
+            MultiformManager.RegisterMultiform(MainMenuMultiform.MultiformName,      new MainMenuMultiform());
+            MultiformManager.RegisterMultiform(LevelSelectMultiform.MultiformName,   new LevelSelectMultiform());
+            MultiformManager.RegisterMultiform(LevelMultiform.MultiformName,         new LevelMultiform());
+            MultiformManager.RegisterMultiform(LevelCompleteMultiform.MultiformName, new LevelCompleteMultiform());
 
-            MultiformManager.Construct(LevelMultiform.MultiformName);
+            MultiformManager.Construct(MainMenuMultiform.MultiformName);
         }
 
     }

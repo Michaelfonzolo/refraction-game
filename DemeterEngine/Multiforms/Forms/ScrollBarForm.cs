@@ -45,9 +45,27 @@ using System;
 namespace DemeterEngine.Multiforms.Forms
 {
 	public class ScrollBarForm : Form
-	{
+    {
 
-		/// <summary>
+        #region Default Values
+
+        public static readonly MouseButtons DefaultButtonToPress        = MouseButtons.Left;
+        public static readonly Keys? DefaultVerticalScrollActivateKey   = null;
+        public static readonly Keys? DefaultHorizontalScrollActivateKey = Keys.LeftShift;
+        
+        public static readonly Keys? DefaultVerticalScrollPlusKey       = Keys.Down;
+        public static readonly Keys? DefaultVerticalScrollMinusKey      = Keys.Up;
+        public static readonly Keys? DefaultHorizontalScrollPlusKey     = Keys.Right;
+        public static readonly Keys? DefaultHorizontalScrollMinusKey    = Keys.Left;
+
+        public static readonly double DefaultJumpAmount             = 0.25;
+        public static readonly double DefaultMouseWheelScrollAmount = 0.01;
+        public static readonly double DefaultKeyboardScrollAmount   = 0.05;
+        public static readonly double DefaultScrollWheelDamper      = 30;
+
+        #endregion
+
+        /// <summary>
 		/// The collider for the entire scroll bar.
 		/// </summary>
 		public RectCollider ScrollBarCollider { get; private set; }
@@ -88,6 +106,12 @@ namespace DemeterEngine.Multiforms.Forms
 			}
 		}
 
+        /// <summary>
+        /// The length of the area the scroll bar can scroll through. This is NOT
+        /// the length of the scroll bar itself.
+        /// </summary>
+        public double Span { get; private set; }
+
 		/// <summary>
 		/// The amount of room the thumb has to move around in the scroll bar.
 		/// </summary>
@@ -99,6 +123,63 @@ namespace DemeterEngine.Multiforms.Forms
 								: ScrollBarCollider.W - ScrollThumbCollider.W;
 			}
 		}
+
+        /// <summary>
+        /// The value of Span * ScrollValue.
+        /// </summary>
+        public double SpanScrollValue
+        {
+            get
+            {
+                return ScrollValue * Span;
+            }
+        }
+
+        /// <summary>
+        /// The value of Range * ScrollValue.
+        /// </summary>
+        public double RangeScrollValue
+        {
+            get
+            {
+                return ScrollValue * Range;
+            }
+        }
+
+        private double prevScrollValue;
+
+        /// <summary>
+        /// The amount by which ScrollValue has changed since the last call to update.
+        /// </summary>
+        public double DeltaScrollValue
+        {
+            get
+            {
+                return ScrollValue - prevScrollValue;
+            }
+        }
+
+        /// <summary>
+        /// The value of Span * DeltaScrollValue.
+        /// </summary>
+        public double DeltaSpanScrollValue
+        {
+            get
+            {
+                return DeltaScrollValue * Span;
+            }
+        }
+
+        /// <summary>
+        /// The value of Range * DeltaScrollValue.
+        /// </summary>
+        public double DeltaRangeScrollValue
+        {
+            get
+            {
+                return DeltaScrollValue * Range;
+            }
+        }
 
 		/// <summary>
 		/// Whether or not the scroll thumb is colliding with the mouse.
@@ -124,20 +205,90 @@ namespace DemeterEngine.Multiforms.Forms
 		/// <summary>
 		/// The mouse button the user has to be pressing in order to use the scroll bar.
 		/// </summary>
-		public MouseButtons Button { get; private set; }
+		public MouseButtons ButtonToPress { get; set; }
+
+        /// <summary>
+        /// The key the user has to press to increase the scroll value (or null).
+        /// </summary>
+        public Keys? ScrollPlusKey { get; set; }
+
+        /// <summary>
+        /// The key the user has to press to decrease the scroll value (or null).
+        /// </summary>
+        public Keys? ScrollMinusKey { get; set; }
 
 		/// <summary>
 		/// The keyboard key the user has to be holding down in order to scroll with the
 		/// mouse wheel. This is so that you can implement horizontal scroll bars which
 		/// require the user to press "shift" to use.
 		/// </summary>
-		public Keys? ScrollLockKey { get; private set; }
+		public Keys? ScrollActivateKey { get; set; }
 
 		/// <summary>
 		/// The amount by which the scroll thumb jumps when the user clicks on the scroll
 		/// bar shaft.
 		/// </summary>
-		public double JumpAmount { get; private set; }
+		public double JumpAmount { get; set; }
+
+		/// <summary>
+		/// The amount by which scrolling the mouse wheel will scroll the thumb.
+		/// </summary>
+		public double MouseWheelScrollAmount { get; set; }
+
+        /// <summary>
+        /// The amount by which to divide the delta scroll wheel value.
+        /// </summary>
+        public double ScrollWheelDampener { get; set; }
+
+        /// <summary>
+        /// The amount by which using the scroll plus/minus keys scrolls the thumb.
+        /// </summary>
+        public double KeyboardScrollAmount { get; set; }
+
+        /// <summary>
+        /// The initial value of the scroll thumb. The value will be clamped between 0 and 1.
+        /// </summary>
+        public double InitialScrollValue
+        {
+            set
+            {
+                if (Begun)
+                {
+                    throw new ArgumentException("Cannot set initial scroll value; form has already begun updating.");
+                }
+                if (Vertical)
+                {
+                    ScrollThumbCollider.Translate(0, value * Range);
+                }
+                else
+                {
+                    ScrollThumbCollider.Translate(value * Range, 0);
+                }
+                ClampThumbPosition();
+            }
+        }
+
+        /// <summary>
+        /// The initial value of the scroll thumb unclamped.
+        /// </summary>
+        public double InitialScrollValueUnclamped
+        {
+            set
+            {
+                if (Begun)
+                {
+                    throw new ArgumentException("Cannot set initial scroll value; form has already begun updating.");
+                }
+                if (Vertical)
+                {
+                    ScrollThumbCollider.Translate(0, value * Range);
+                }
+                else
+                {
+                    ScrollThumbCollider.Translate(value * Range, 0);
+                }
+            }
+        }
 
 		/// <summary>
 		/// Whether or not the scroll bar is locked. If it is locked, the user cannot interact
@@ -152,14 +303,14 @@ namespace DemeterEngine.Multiforms.Forms
 
 		private double prevDragPos = 0;
 
-		public ScrollBarForm(
-			Vector2 topLeft, int scrollBarLength, int spanLength, 
-			int scrollBarWidth, bool vertical, float initialScrollValue = 0, 
-			MouseButtons respondTo = MouseButtons.Left, Keys? scrollLock = null,
-			double jumpAmount = 0.25, bool keepsTime = true)
-			: base(keepsTime)
+        public ScrollBarForm(
+            Vector2 topLeft, int scrollBarLength, int spanLength, 
+            int scrollBarWidth, bool vertical, bool keepsTime = true)
+            : base(keepsTime)
 		{
+            Locked = false;
 			Vertical = vertical;
+            Span = spanLength - scrollBarLength;
 
 			// Let Sl = scrollBarLength, St = scrollThumbLength, and T = spanLength.
 			// Then St/Sl = Sl/T, so St = Sl^2/T.
@@ -172,30 +323,31 @@ namespace DemeterEngine.Multiforms.Forms
 			{
 				ScrollBarCollider   = new RectCollider(topLeft, scrollBarWidth, scrollBarLength);
 				ScrollThumbCollider = new RectCollider(topLeft, scrollBarWidth, scrollThumbLength);
-				ScrollThumbCollider.Translate(0, initialScrollValue * Range);
 			}
 			else
 			{
 				ScrollBarCollider   = new RectCollider(topLeft, scrollBarLength, scrollBarWidth);
 				ScrollThumbCollider = new RectCollider(topLeft, scrollThumbLength, scrollBarWidth);
-				ScrollThumbCollider.Translate(initialScrollValue * Range, 0);
 			}
 
 			ClampThumbPosition();
 
-			Button = respondTo;
-			if (!scrollLock.HasValue)
-			{
-				ScrollLockKey = vertical ? null : (Nullable<Keys>)Keys.LeftShift;
-			}
-			else
-			{
-				ScrollLockKey = scrollLock;
-			}
+            // Initialize the default values.
 
-			JumpAmount = jumpAmount;
+            ButtonToPress          = DefaultButtonToPress;
+            ScrollActivateKey      = Vertical ? DefaultVerticalScrollActivateKey 
+                                              : DefaultHorizontalScrollActivateKey;
 
-			Locked = false;
+			JumpAmount             = DefaultJumpAmount;
+			MouseWheelScrollAmount = DefaultMouseWheelScrollAmount;
+            KeyboardScrollAmount = DefaultKeyboardScrollAmount;
+            ScrollWheelDampener    = DefaultScrollWheelDamper;
+
+            ScrollPlusKey          = Vertical ? DefaultVerticalScrollPlusKey
+                                              : DefaultHorizontalScrollPlusKey;
+
+            ScrollMinusKey         = Vertical ? DefaultVerticalScrollMinusKey
+                                              : DefaultHorizontalScrollMinusKey;
 		}
 
 		/// <summary>
@@ -237,7 +389,7 @@ namespace DemeterEngine.Multiforms.Forms
 		/// between the boundaries of the scroll bar. If `absolute` is false, then the given amount 
 		/// is interpretted as a percentage.
 		/// </summary>
-		public void Scroll(
+		public virtual void Scroll(
 			double amount, bool absolute = false, bool clamp = true, bool overrideLock = false)
 		{
 			if (Locked && !overrideLock)
@@ -266,7 +418,7 @@ namespace DemeterEngine.Multiforms.Forms
 		/// between the boundaries of the scroll bar. If `absolute` is false, then the given amount 
 		/// is interpretted as a percentage.
 		/// </summary>
-		public void ScrollTo(
+		public virtual void ScrollTo(
 			double value, bool absolute = false, bool clamp = true, bool overrideLock = false)
 		{
 			if (Locked && !overrideLock)
@@ -290,6 +442,10 @@ namespace DemeterEngine.Multiforms.Forms
 			}
 		}
 
+		/// <summary>
+		/// Jump the thumb along the shaft in response to a click on the shaft.
+		/// </summary>
+		/// <param name="mpos"></param>
 		protected virtual void JumpThumb(Point mpos)
 		{
 			bool positive = false;
@@ -301,21 +457,47 @@ namespace DemeterEngine.Multiforms.Forms
 			Scroll(positive ? JumpAmount : -JumpAmount);
 		}
 
+		/// <summary>
+		/// Drag the thumb according to a change in the mouse position.
+		/// </summary>
+		/// <param name="mpos"></param>
 		protected virtual void DragThumb(Point mpos)
 		{
 			if (Vertical)
 			{
-				Scroll(mpos.Y - prevDragPos);
+				Scroll(mpos.Y - prevDragPos, true);
 			}
 			else
 			{
-				Scroll(mpos.X - prevDragPos);
+				Scroll(mpos.X - prevDragPos, true);
 			}
+			prevDragPos = mpos.Y;
 		}
+
+		/// <summary>
+		/// Scroll the thumb in response to a change in the mouse scroll wheel value.
+		/// 
+		/// This is called if MouseInput.DeltaScrollWheelValue != 0, and the ScrollLockKey is
+		/// null or pressed.
+		/// </summary>
+		protected virtual void MouseWheelScroll()
+		{
+            var multiplier = Vertical ? -1 : 1;
+			Scroll(multiplier * MouseWheelScrollAmount / ScrollWheelDampener * MouseInput.DeltaScrollWheelValue);
+		}
+
+        protected virtual bool ValidKeyPressedState(Keys key)
+        {
+            return KeyboardInput.IsClicked(key) ||
+                  (KeyboardInput.IsHeld(key, 400d) &&
+                  (KeyboardInput.FramesSinceKeyPressed[KeyboardInput.KeyToInt(key)] - 400d) % 2 == 0);
+        }
 
 		public override void Update()
 		{
 			base.Update();
+
+            prevScrollValue = ScrollValue;
 
 			if (Locked)
 				return;
@@ -325,7 +507,7 @@ namespace DemeterEngine.Multiforms.Forms
 			ThumbCollidingWithMouse = ScrollThumbCollider.CollidingWith(MouseInput.MousePosition).Colliding;
 			CollidingWithMouse = ScrollBarCollider.CollidingWith(mpos).Colliding;
 
-			if (MouseInput.IsClicked(Button))
+			if (MouseInput.IsClicked(ButtonToPress))
 			{
 				if (ShaftCollidingWithMouse)
 				{
@@ -337,19 +519,35 @@ namespace DemeterEngine.Multiforms.Forms
 					prevDragPos = Vertical ? mpos.Y : mpos.X;
 				}
 			}
-			else if (MouseInput.IsPressed(Button))
+			else if (MouseInput.IsPressed(ButtonToPress))
 			{
 				if (Dragging)
 				{
 					DragThumb(mpos);
-					prevDragPos = mpos.Y;
 				}
 			}
-			else if (MouseInput.IsUnheld(Button, 0))
+			else if (MouseInput.IsUnheld(ButtonToPress, 0))
 			{
 				Dragging = false;
 				prevDragPos = 0;
 			}
+
+			if (!ScrollActivateKey.HasValue || KeyboardInput.IsPressed(ScrollActivateKey.Value))
+			{
+				if (MouseInput.DeltaScrollWheelValue != 0)
+				{
+					MouseWheelScroll();
+				}
+			}
+
+            if (ScrollPlusKey.HasValue && ValidKeyPressedState(ScrollPlusKey.Value))
+            {
+                Scroll(KeyboardScrollAmount);
+            }
+            else if (ScrollMinusKey.HasValue && ValidKeyPressedState(ScrollMinusKey.Value))
+            {
+                Scroll(-KeyboardScrollAmount);
+            }
 		}
 	}
 }

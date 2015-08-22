@@ -162,7 +162,7 @@ namespace DemeterEngine.Multiforms.Forms
 			if (ValidKeyPressedState(NavigateRight))
 				Navigate(1);
 
-			if (SelectedButtonIndex.HasValue)
+			if (SelectedButtonIndex.HasValue && !RegisteredButtons[SelectedButtonIndex.Value].Locked)
 			{
 				if (KeyboardInput.IsPressed(LooseFocusKey)
 					|| RegisteredButtons.Count(b => b.CollidingWithMouse) > 0)

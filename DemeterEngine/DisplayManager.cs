@@ -126,6 +126,10 @@ namespace DemeterEngine
         private Resolution windowResolution;
         public static Resolution WindowResolution { get { return Instance.windowResolution; } }
 
+        public static int WindowWidth { get { return WindowResolution.Width; } }
+
+        public static int WindowHeight { get { return WindowResolution.Height; } }
+
         public static Rectangle WindowRect
         {
             get

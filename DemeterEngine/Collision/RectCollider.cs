@@ -191,6 +191,9 @@ namespace DemeterEngine.Collision
         public RectCollider(Vector2 position, double w, double h)
             : this(position.X, position.Y, w, h) { }
 
+        public RectCollider(Vector2 position, Vector2 sides)
+            : this(position.X, position.Y, sides.X, sides.Y) { }
+
         public RectCollider(RectCollider rect)
             : this(rect.X, rect.Y, rect.W, rect.H) { }
 

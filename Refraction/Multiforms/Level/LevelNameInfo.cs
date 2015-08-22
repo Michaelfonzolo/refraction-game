@@ -74,7 +74,7 @@ namespace Refraction_V2.Multiforms.Level
 
 		public LevelNameInfo(int levelNum)
 		{
-			if (0 > levelNum || levelNum > LoadedLevelManager.NUM_SEQUENTIAL_LEVELS)
+			if (0 > levelNum || levelNum > LoadedLevelManager.SequentialLevels.Length)
 				throw new LevelLoadException(
 					String.Format("Invalid level number {0}.", levelNum));
 			LevelNumber = levelNum;
@@ -95,7 +95,7 @@ namespace Refraction_V2.Multiforms.Level
 		/// <returns></returns>
 		public bool HasNextLevel()
 		{
-			return Sequential && LevelNumber < LoadedLevelManager.NUM_SEQUENTIAL_LEVELS - 1;
+			return Sequential && LevelNumber < LoadedLevelManager.SequentialLevels.Length - 1;
 		}
 
 		/// <summary>

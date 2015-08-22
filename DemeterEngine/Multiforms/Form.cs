@@ -73,9 +73,17 @@ namespace DemeterEngine.Multiforms
         /// </summary>
         public AttributeContainer Attributes { get; protected set; }
 
+        /// <summary>
+        /// Whether or not we have begun updating this form. The value of this property is false
+        /// between the time the instance is initialized and the first time it's update method
+        /// is called.
+        /// </summary>
+        public bool Begun { get; private set; }
+
         public Form(bool keepTime = false, int initialFrame = 0, double initialTime = 0)
             : base(keepTime, initialFrame, initialTime)
         {
+            Begun = false;
             Attributes = new AttributeContainer();
         }
 
@@ -187,6 +195,7 @@ namespace DemeterEngine.Multiforms
         /// </summary>
         public virtual void Update()
         {
+            Begun = true;
             base.UpdateTime();
             UpdateEffectors();
         }

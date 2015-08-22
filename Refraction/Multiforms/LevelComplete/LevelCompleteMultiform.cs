@@ -40,6 +40,7 @@ using DemeterEngine.Multiforms.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Refraction_V2.Multiforms.Level;
+using Refraction_V2.Multiforms.LevelSelect;
 using System;
 using System.Collections.Generic;
 
@@ -130,7 +131,7 @@ namespace Refraction_V2.Multiforms.LevelComplete
 			}
 			else
 				throw new MultiformException(
-					String.Format("Unknown multiform layout '{0}' -> '{1}'.", args.SenderName, MultiformName)
+					String.Format("Unknown multiform layout: '{0}' -> '{1}'.", args.SenderName, MultiformName)
 					);
 
 			Construct_Text();
@@ -294,7 +295,9 @@ namespace Refraction_V2.Multiforms.LevelComplete
 				|| (!hasPrevLevel && hasNextLevel && releasedButton == 2)
 				|| (!hasPrevLevel && !hasNextLevel && releasedButton == 1))
 			{
-				// Do some shit.	
+                Manager.Close(this);
+                Manager.Construct(LevelSelectMultiform.MultiformName);
+                ClearForms();
 			}
 		}
 

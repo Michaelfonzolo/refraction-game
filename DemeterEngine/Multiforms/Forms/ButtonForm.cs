@@ -59,6 +59,11 @@ namespace DemeterEngine.Multiforms.Forms
 		/// </summary>
         public bool CollidingWithMouse { get; internal set; }
 
+        /// <summary>
+        /// Whether or not interaction with this button is locked.
+        /// </summary>
+        public bool Locked { get; private set; }
+
 		/// <summary>
 		/// A dictionary representing the held down states of each mouse button. For example, if the
 		/// user is holding down the Left mouse button whilst colliding with this button, then the
@@ -97,9 +102,23 @@ namespace DemeterEngine.Multiforms.Forms
 			Collider = collider;
 		}
 
+        public void LockInteraction()
+        {
+            Locked = true;
+            CollidingWithMouse = false;
+        }
+
+        public void UnlockInteraction()
+        {
+            Locked = false;
+        }
+
         private void UpdateButton(MouseButtons button)
         {
             _ReleasedButtons[button] = false;
+
+            if (Locked)
+                return;
 
             if (CollidingWithMouse)
             {
@@ -134,10 +153,13 @@ namespace DemeterEngine.Multiforms.Forms
 			if (Collider == null)
 				return;
 
-            var response =
-                Collider.CollidingWith(
-                    new PointCollider(MouseInput.MousePosition));
-            CollidingWithMouse = response == null ? false : response.Colliding;
+            if (!Locked)
+            {
+                var response =
+                    Collider.CollidingWith(
+                        new PointCollider(MouseInput.MousePosition));
+                CollidingWithMouse = response == null ? false : response.Colliding;
+            }
 
             foreach (var button in Enum.GetValues(typeof(MouseButtons)).Cast<MouseButtons>())
                 UpdateButton(button);

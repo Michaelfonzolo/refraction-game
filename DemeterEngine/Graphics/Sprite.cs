@@ -72,22 +72,22 @@ namespace DemeterEngine.Graphics
         /// <summary>
         /// The red value of the sprite's tint.
         /// </summary>
-        public float TintRed { get; set; }
+        public double TintRed { get; set; }
 
         /// <summary>
         /// The green value of the sprite's tint.
         /// </summary>
-        public float TintGreen { get; set; }
+        public double TintGreen { get; set; }
 
         /// <summary>
         /// The blue value of the sprite's tint.
         /// </summary>
-        public float TintBlue { get; set; }
+        public double TintBlue { get; set; }
 
         /// <summary>
         /// The alpha value of the sprite.
         /// </summary>
-        public float Alpha { get; set; }
+        public double Alpha { get; set; }
 
         /// <summary>
         /// The center of the sprite's texture's bounds.
