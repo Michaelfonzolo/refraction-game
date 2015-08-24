@@ -55,6 +55,7 @@ namespace Refraction_V2
 
         public override void LoadMultiforms()
         {
+            
             MultiformManager.RegisterMultiform(MainMenuMultiform.MultiformName,      new MainMenuMultiform());
             MultiformManager.RegisterMultiform(LevelSelectMultiform.MultiformName,   new LevelSelectMultiform());
             MultiformManager.RegisterMultiform(LevelMultiform.MultiformName,         new LevelMultiform());

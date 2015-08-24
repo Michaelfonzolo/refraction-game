@@ -70,6 +70,26 @@ namespace DemeterEngine.Collision
         }
 
         /// <summary>
+        /// The vector representing the center on the top edge of the rectangle.
+        /// </summary>
+        public Vector2 TopCenter { get { return new Vector2((float)(X + W / 2f), (float)Y); } }
+
+        /// <summary>
+        /// The vector representing the center on the bottom edge of the rectangle.
+        /// </summary>
+        public Vector2 BottomCenter { get { return new Vector2((float)(X + W / 2f), (float)(Y + H)); } }
+
+        /// <summary>
+        /// The vector representing the center on the left edge of the rectangle.
+        /// </summary>
+        public Vector2 LeftCenter { get { return new Vector2((float)X, (float)(Y + H / 2f)); } }
+
+        /// <summary>
+        /// The vector representing the center on the bottom edge of the rectangle.
+        /// </summary>
+        public Vector2 RightCenter { get { return new Vector2((float)(X + W), (float)(Y + H / 2f)); } }
+
+        /// <summary>
         /// The coordinates of this rectangle, ordered clockwise (relative to the game world)
         /// starting with the top left corner.
         /// </summary>

@@ -34,10 +34,12 @@
 
 using DemeterEngine;
 using DemeterEngine.Collision;
+using DemeterEngine.Input;
 using DemeterEngine.Multiforms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Refraction_V2.Multiforms.Level;
+using Refraction_V2.Utils;
 
 #endregion
 
@@ -46,7 +48,7 @@ namespace Refraction_V2.Multiforms.LevelSelect
 	public class LevelSelectMultiform : Multiform
     {
 
-        #region Name Constants
+        #region Form Info
 
         /// <summary>
         /// The name of this multiform.
@@ -58,9 +60,10 @@ namespace Refraction_V2.Multiforms.LevelSelect
         /// </summary>
 		public const string ScrollBarFormName = "ScrollBar";
 
-        #endregion
-
-        #region Form Offset Constants
+        /// <summary>
+        /// The name of the back button form.
+        /// </summary>
+        public const string BackButtonFormName = "BackButton";
 
         /// <summary>
 		/// The x offset of the first level select button from the top of the screen.
@@ -86,6 +89,20 @@ namespace Refraction_V2.Multiforms.LevelSelect
 		/// The number of level select buttons per row.
 		/// </summary>
 		public const int BUTTONS_PER_ROW = 10;
+
+        /// <summary>
+        /// The GUIButtonInfo for the back button.
+        /// </summary>
+        public static readonly GUIButtonInfo BackButtonInfo = new GUIButtonInfo(
+            "Back", Assets.LevelSelect.Images.BackButton, Assets.Shared.Fonts.GUIButtonFont_Small);
+
+        /// <summary>
+        /// The bottom left of the back button.
+        /// </summary>
+        public static readonly Vector2 BackButtonBottomLeft = new Vector2(
+            10,
+            DisplayManager.WindowHeight - 10
+            );
 
         #endregion
 
@@ -116,7 +133,7 @@ namespace Refraction_V2.Multiforms.LevelSelect
 			int xOffset = INITIAL_LEVEL_SELECT_X_OFFSET;
 			int yOffset = INITIAL_LEVEL_SELECT_Y_OFFSET;
 
-			int rowNum          = (int)(LoadedLevelManager.SequentialLevels.Length / BUTTONS_PER_ROW),
+			int rowNum          = LoadedLevelManager.SequentialLevels.Length / BUTTONS_PER_ROW,
 				totalWidth      = (LevelSelectButton.BUTTON_WIDTH + LEVEL_SELECT_BUTTON_GAP_X - 2) * BUTTONS_PER_ROW,
 				totalHeight     = rowNum * LevelSelectButton.BUTTON_HEIGHT + (rowNum - 1) * LEVEL_SELECT_BUTTON_GAP_Y + 200,
 				scrollBarHeight = DisplayManager.WindowResolution.Height - 2 * INITIAL_LEVEL_SELECT_Y_OFFSET;
@@ -152,6 +169,9 @@ namespace Refraction_V2.Multiforms.LevelSelect
                 RegisterForm(button);
             }
 
+            RegisterForm(BackButtonFormName,
+                new GUIButton(BackButtonInfo, BackButtonBottomLeft, PositionType.BottomLeft));
+
             SetUpdater(Update_Main);
 			SetRenderer(Render_Main);
 		}
@@ -171,9 +191,6 @@ namespace Refraction_V2.Multiforms.LevelSelect
 
             UpdateFormsExcept(ScrollBarFormName);
 
-            // This has to come after the above statements because if we clear the forms
-            // then the calls to UpdateForms will throw a KeyNotFoundException. Alternatively,
-            // there could just be a return statement at the end of this if-block, but whatever.
             if (buttonPressed)
             {
                 Manager.Close(this);
@@ -185,6 +202,17 @@ namespace Refraction_V2.Multiforms.LevelSelect
                 Manager.Construct(LevelMultiform.MultiformName, data);
 
                 ClearForms();
+
+                return;
+            }
+
+            if (GetForm<GUIButton>(BackButtonFormName).IsReleased(MouseButtons.Left))
+            {
+                Manager.Close(this);
+                Manager.Construct(MainMenu.MainMenuMultiform.MultiformName);
+                ClearForms();
+
+                return;
             }
 		}
 

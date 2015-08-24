@@ -38,8 +38,10 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Assets.cs" />
     <Compile Include="LoadedLevelManager.cs" />
-    <Compile Include="Multiforms\LevelComplete\LevelCompleteButtonForm.cs" />
+    <Compile Include="Multiforms\GUIButton.cs" />
+    <Compile Include="Multiforms\GUIButtonInfo.cs" />
     <Compile Include="Multiforms\LevelComplete\LevelCompleteMultiform.cs" />
     <Compile Include="Multiforms\LevelComplete\LevelCompleteTextForm.cs" />
     <Compile Include="Multiforms\LevelSelect\LevelSelectScrollBar.cs" />
@@ -74,13 +76,13 @@
     <Compile Include="Multiforms\Level\Tiles\RF_UxR_UR.cs" />
     <Compile Include="Multiforms\Level\TileType.cs" />
     <Compile Include="Multiforms\MainMenu\LogoForm.cs" />
-    <Compile Include="Multiforms\MainMenu\MainMenuButtonForm.cs" />
     <Compile Include="Multiforms\MainMenu\MainMenuMultiform.cs" />
     <Compile Include="OptionsManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RefractionGameKernel.cs" />
     <Compile Include="UserConfig.cs" />
+    <Compile Include="Utils\PositionType.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">

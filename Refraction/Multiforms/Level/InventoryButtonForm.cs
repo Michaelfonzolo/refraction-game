@@ -41,6 +41,7 @@ using DemeterEngine;
 using DemeterEngine.Collision;
 using DemeterEngine.Graphics;
 using DemeterEngine.Multiforms.Forms;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 
 #endregion
@@ -50,43 +51,55 @@ namespace Refraction_V2.Multiforms.Level
     public class InventoryButtonForm : ButtonForm
     {
 
+        /// <summary>
+        /// The type of tile this button represents.
+        /// </summary>
         public TileType Type { get; private set; }
 
+        /// <summary>
+        /// The sprite for the tile this button represents.
+        /// </summary>
         public Sprite Sprite { get; private set; }
 
+        /// <summary>
+        /// The sprite for the button itself.
+        /// </summary>
         public Sprite ButtonSprite { get; private set; }
 
+        /// <summary>
+        /// The sprite to draw overtop the button when the mouse is hovering over it.
+        /// </summary>
         public Sprite HoverSprite { get; private set; }
 
         public InventoryButtonForm(TileType type, RectCollider collider)
             : base(collider, true)
         {
             Type = type;
-            Sprite = ArtManager.Sprite(GetSpriteName(type));
-            ButtonSprite = ArtManager.Sprite("InventoryButton");
-            HoverSprite = ArtManager.Sprite("InventoryButtonHover");
+            Sprite = new Sprite(GetSpriteName(type));
+            ButtonSprite = new Sprite(Assets.Level.Images.InventoryButton);
+            HoverSprite = new Sprite(Assets.Level.Images.InventoryButtonHover);
         }
 
-        private string GetSpriteName(TileType type)
+        private Texture2D GetSpriteName(TileType type)
         {
             switch (type)
             {
                 case TileType.RF_UxL_UL:
-                    return "Refractor_UxL_UL";
+                    return Assets.Level.Images.Refractor_UxL_UL;
                 case TileType.RF_UxR_UR:
-                    return "Refractor_UxR_UR";
+                    return Assets.Level.Images.Refractor_UxR_UR;
                 case TileType.RF_DxR_DR:
-                    return "Refractor_DxR_DR";
+                    return Assets.Level.Images.Refractor_DxR_DR;
                 case TileType.RF_DxL_DL:
-                    return "Refractor_DxL_DL";
+                    return Assets.Level.Images.Refractor_DxL_DL;
                 case TileType.RF_ULxUR_U:
-                    return "Refractor_ULxUR_U";
+                    return Assets.Level.Images.Refractor_ULxUR_U;
                 case TileType.RF_DLxDR_D:
-                    return "Refractor_DLxDR_D";
+                    return Assets.Level.Images.Refractor_DLxDR_D;
                 case TileType.RF_ULxDL_L:
-                    return "Refractor_ULxDL_L";
+                    return Assets.Level.Images.Refractor_ULxDL_L;
                 case TileType.RF_URxDR_R:
-                    return "Refractor_URxDR_R";
+                    return Assets.Level.Images.Refractor_URxDR_R;
                 default:
                     throw new ArgumentException("Invalid TileType.");
             }

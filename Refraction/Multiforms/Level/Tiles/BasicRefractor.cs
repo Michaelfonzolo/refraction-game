@@ -36,6 +36,7 @@
 #region Using Statements
 
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System.Linq;
 
 #endregion
@@ -61,8 +62,8 @@ namespace Refraction_V2.Multiforms.Level.Tiles
 		/// </summary>
 		public bool InUse { get; protected set; }
 
-        public BasicRefractorTile(string spriteName, Vector2 position, bool open)
-            : base(spriteName, position, open) { }
+        public BasicRefractorTile(Texture2D texture, Vector2 position, bool open)
+            : base(texture, position, open) { }
 
         public override void Update()
         {

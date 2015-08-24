@@ -66,7 +66,7 @@ namespace Refraction_V2.Multiforms.Level.Tiles
             OutputDirection = direction;
             OutputColour = colour;
 
-            TileSprite = ArtManager.Sprite("Outputter");
+            TileSprite = new Sprite(Assets.Level.Images.Outputter);
             TileSprite.CenterOn(Center);
             TileSprite.Rotation = Math.Atan2(OutputDirection.Y, OutputDirection.X);
             TileSprite.Tint = OutputColour.Color * 3f;

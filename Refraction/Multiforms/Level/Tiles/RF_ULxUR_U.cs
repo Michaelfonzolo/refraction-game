@@ -60,7 +60,7 @@ namespace Refraction_V2.Multiforms.Level.Tiles
         protected override Directions OutputDirection { get { return Directions.Up; } }
 
         public RF_ULxUR_U(Vector2 position, bool open)
-            : base("Refractor_ULxUR_U", position, open) { }
+            : base(Assets.Level.Images.Refractor_ULxUR_U, position, open) { }
     }
 }
 

@@ -18,19 +18,14 @@ namespace Refraction_V2.Multiforms.MainMenu
 
         public const string PlayButtonFormName = "PlayButton";
 
-        public static readonly double PLAY_BUTTON_X = DisplayManager.WindowResolution.Width / 2f;
+        public static readonly Vector2 PlayButtonCenter = DisplayManager.WindowResolution.Center;
 
-        public static readonly double PLAY_BUTTON_Y = DisplayManager.WindowResolution.Height / 2f;
-
-        public static readonly Vector2 PLAY_BUTTON_TOPLEFT =
-            DisplayManager.WindowResolution.Center
-            - MainMenuButtonForm.BUTTON_DIMENSIONS / 2f;
+        public static readonly GUIButtonInfo PlayButtonInfo = new GUIButtonInfo(
+            "Play", Assets.MainMenu.Images.PlayButton);
 
         public override void Construct(MultiformTransmissionData args)
         {
-            var playButtonRect = new RectCollider(PLAY_BUTTON_TOPLEFT, MainMenuButtonForm.BUTTON_DIMENSIONS);
-            var playButton = new MainMenuButtonForm(playButtonRect, MainMenuButtonForm.PlayButton);
-            RegisterForm(PlayButtonFormName, playButton);
+            RegisterForm(PlayButtonFormName, new GUIButton(PlayButtonInfo, PlayButtonCenter));
 
             SetUpdater(Update_Main);
             SetRenderer(Render_Main);
@@ -40,11 +35,13 @@ namespace Refraction_V2.Multiforms.MainMenu
         {
             UpdateForms();
 
-            if (GetForm<MainMenuButtonForm>(PlayButtonFormName).IsReleased(MouseButtons.Left))
+            if (GetForm<GUIButton>(PlayButtonFormName).IsReleased(MouseButtons.Left))
             {
                 Manager.Close(this);
                 Manager.Construct(LevelSelectMultiform.MultiformName);
                 ClearForms();
+
+                return;
             }
         }
 

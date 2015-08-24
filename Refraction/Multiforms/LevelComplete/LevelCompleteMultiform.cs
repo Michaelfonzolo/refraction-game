@@ -41,6 +41,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Refraction_V2.Multiforms.Level;
 using Refraction_V2.Multiforms.LevelSelect;
+using Refraction_V2.Utils;
 using System;
 using System.Collections.Generic;
 
@@ -51,7 +52,7 @@ namespace Refraction_V2.Multiforms.LevelComplete
 	public class LevelCompleteMultiform : Multiform
 	{
 
-		#region Name Constants
+		#region Form Info
 
 		/// <summary>
 		/// The name of this multiform.
@@ -88,36 +89,54 @@ namespace Refraction_V2.Multiforms.LevelComplete
 		/// </summary>
 		public const string ButtonNavigatorFormName = "ButtonNavigator";
 
-		#endregion
+        /// <summary>
+        /// The position of the "level complete" text on screen.
+        /// </summary>
+        public static readonly Vector2 LVL_CMPL_TXT_CENTER = new Vector2(
+            DisplayManager.WindowWidth / 2f,
+            DisplayManager.WindowHeight / 2f - 75
+            );
 
-		#region Form Offsets
+        /// <summary>
+        /// The center of the "replay level" button on screen.
+        /// </summary>
+        public static readonly Vector2 ReplayButtonCenter = DisplayManager.WindowResolution.Center;
 
-		/// <summary>
-		/// The y-offset of the level complete text from the screen center.
-		/// </summary>
-		public const int LEVEL_COMPLETE_TEXT_Y_OFFSET = 75;
+        public static readonly GUIButtonInfo ReplayButtonInfo = new GUIButtonInfo(
+            "Replay", Assets.LevelComplete.Images.ReplayButton);
 
-		/// <summary>
-		/// The x-offset of the previous level and next level buttons relative to
-		/// the screen center.
-		/// </summary>
-		public const int BUTTON_X_OFFSET = 175;
+        /// <summary>
+        /// The center of the "previous level" button on screen.
+        /// </summary>
+        public static readonly Vector2 PrevButtonCenter = new Vector2(
+            DisplayManager.WindowWidth / 2f - 175,
+            DisplayManager.WindowHeight / 2f
+            );
 
-		/// <summary>
-		/// Th y-offset of the previous level, replay level, and next level buttons
-		/// relative to the screen center.
-		/// </summary>
-		public const int BUTTON_Y_OFFSET = 0;
+        public static readonly GUIButtonInfo PrevButtonInfo = new GUIButtonInfo(
+            "Previous", Assets.LevelComplete.Images.PrevButton);
 
-		/// <summary>
-		/// The x-offset of the back button relative to the left side of the screen.
-		/// </summary>
-		public const int BACK_BUTTON_X_OFFSET = 50;
+        /// <summary>
+        /// The center of the "next level" button on screen.
+        /// </summary>
+        public static readonly Vector2 NextButtonCenter = new Vector2(
+            DisplayManager.WindowWidth / 2f + 175,
+            DisplayManager.WindowHeight / 2f
+            );
 
-		/// <summary>
-		/// The y-offset of the back button relative to the bottom of the screen.
-		/// </summary>
-		public const int BACK_BUTTON_Y_OFFSET = 28;
+        public static readonly GUIButtonInfo NextButtonInfo = new GUIButtonInfo(
+            "Next", Assets.LevelComplete.Images.NextButton);
+
+        /// <summary>
+        /// The center of the "back" button on screen.
+        /// </summary>
+        public static readonly Vector2 BackButtonBottomLeft = new Vector2(
+            10,
+            DisplayManager.WindowHeight - 10
+            );
+
+        public static readonly GUIButtonInfo BackButtonInfo = new GUIButtonInfo(
+            "Back", Assets.LevelComplete.Images.BackButton, Assets.Shared.Fonts.GUIButtonFont_Small);
 
 		#endregion
 
@@ -152,25 +171,25 @@ namespace Refraction_V2.Multiforms.LevelComplete
 			else
 				text = "Level Complete";
 
-			var textPosition = DisplayManager.WindowResolution.Center - new Vector2(0, LEVEL_COMPLETE_TEXT_Y_OFFSET);
-			RegisterForm(LevelCompleteTextFormName, new LevelCompleteTextForm(text, textPosition));
+			RegisterForm(
+                LevelCompleteTextFormName, 
+                new LevelCompleteTextForm(text, LVL_CMPL_TXT_CENTER)
+                );
 		}
+
+        private void RegisterButton(
+            string name, GUIButtonInfo info, Vector2 position, List<string> navigatorButtons,
+            PositionType positionType = PositionType.Center)
+        {
+            RegisterForm(name, new GUIButton(info, position, positionType));
+            navigatorButtons.Add(name);
+        }
 
 		/// <summary>
 		/// Construct the button forms.
 		/// </summary>
 		private void Construct_Buttons()
 		{
-			Vector2 screenCenter       = DisplayManager.WindowResolution.Center;
-			Vector2 offset             = new Vector2(BUTTON_X_OFFSET, BUTTON_Y_OFFSET);
-
-			Vector2 replayButtonCenter = screenCenter;
-			Vector2 prevButtonCenter   = screenCenter - offset;
-			Vector2 nextButtonCenter   = screenCenter + offset;
-			Vector2 backButtonCenter   = new Vector2(
-											BACK_BUTTON_X_OFFSET, 
-											DisplayManager.WindowResolution.Height - BACK_BUTTON_Y_OFFSET);
-
 			var navigatorButtons = new List<string>();
 
 			// The reason for the weird order in which we add the button form names
@@ -179,54 +198,45 @@ namespace Refraction_V2.Multiforms.LevelComplete
 
 			if (LevelNameInfo.HasPrevLevel())
 			{
-				RegisterForm(
-					PrevButtonFormName,
-					new LevelCompleteButtonForm(
-						LevelCompleteButtonForm.PREV_BUTTON_NAME, prevButtonCenter));
-
-				navigatorButtons.Add(PrevButtonFormName);
+                RegisterButton(PrevButtonFormName, PrevButtonInfo, PrevButtonCenter, navigatorButtons);
 			}
 
-			navigatorButtons.Add(ReplayButtonFormName);
+			RegisterButton(ReplayButtonFormName, ReplayButtonInfo, ReplayButtonCenter, navigatorButtons);
 
 			if (LevelNameInfo.HasNextLevel())
 			{
-				RegisterForm(
-					NextButtonFormName,
-					new LevelCompleteButtonForm(
-						LevelCompleteButtonForm.NEXT_BUTTON_NAME, nextButtonCenter));
-
-				navigatorButtons.Add(NextButtonFormName);
+                RegisterButton(NextButtonFormName, NextButtonInfo, NextButtonCenter, navigatorButtons);
 			}
 
-			navigatorButtons.Add(BackButtonFormName);
-
-			RegisterForm(
-					ReplayButtonFormName,
-					new LevelCompleteButtonForm(
-						LevelCompleteButtonForm.REPLAY_BUTTON_NAME, replayButtonCenter));
-
-			RegisterForm(
-					BackButtonFormName,
-					new LevelCompleteButtonForm(
-						LevelCompleteButtonForm.BACK_BUTTON_NAME, backButtonCenter));
+			RegisterButton(
+                BackButtonFormName, BackButtonInfo, BackButtonBottomLeft, 
+                navigatorButtons, PositionType.BottomLeft);
 
 			RegisterForm(ButtonNavigatorFormName, new KeyboardButtonNavigatorForm(navigatorButtons.ToArray()));
 		}
 
-		private const int DONT_INCREMENT = 0;
-		private const int INCREMENT_NEXT = 1;
-		private const int INCREMENT_PREV = -1;
+        #region Constants indicating which level to go to next
 
-		public void ReturnToLevel(int increment)
+        private const int SAME_LEVEL = 0;
+		private const int NEXT_LEVEL = 1;
+		private const int PREV_LEVEL = -1;
+
+        #endregion
+
+        /// <summary>
+        /// Return to the level multiform. The "increment" argument indicates whether
+        /// we stay on the same level, go to the previous level, or go to the next level.
+        /// </summary>
+        /// <param name="increment"></param>
+        public void ReturnToLevel(int increment)
 		{
 			Manager.Close(this);
 
 			var data = new MultiformTransmissionData(MultiformName);
 
-			if (increment == INCREMENT_NEXT)
+			if (increment == NEXT_LEVEL)
 				LevelNameInfo.IncrementLevel();
-			else if (increment == INCREMENT_PREV)
+			else if (increment == PREV_LEVEL)
 				LevelNameInfo.DecrementLevel();
 
 			data.SetAttr<LevelNameInfo>("LevelNameInfo", LevelNameInfo);
@@ -275,20 +285,20 @@ namespace Refraction_V2.Multiforms.LevelComplete
 				|| (hasPrevLevel && releasedButton == 1)
 				|| (!hasPrevLevel && releasedButton == 0))
 			{
-				ReturnToLevel(DONT_INCREMENT);
+				ReturnToLevel(SAME_LEVEL);
 			}
 			else if (hasPrevLevel &&
 				prevButton.IsReleased(mButton)
 				|| releasedButton == 0)
 			{
-				ReturnToLevel(INCREMENT_PREV);
+				ReturnToLevel(PREV_LEVEL);
 			}
 			else if (hasNextLevel && 
 				nextButton.IsReleased(mButton)
 				|| (hasPrevLevel && releasedButton == 2)
 				|| (!hasPrevLevel && releasedButton == 1))
 			{
-				ReturnToLevel(INCREMENT_NEXT);
+				ReturnToLevel(NEXT_LEVEL);
 			}
 			else if (backButton.IsReleased(mButton)
 				|| (hasPrevLevel && hasNextLevel && releasedButton == 3)

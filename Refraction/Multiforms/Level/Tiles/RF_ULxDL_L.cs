@@ -60,6 +60,6 @@ namespace Refraction_V2.Multiforms.Level.Tiles
         protected override Directions OutputDirection { get { return Directions.Left; } }
 
         public RF_ULxDL_L(Vector2 position, bool open)
-            : base("Refractor_ULxDL_L", position, open) { }
+            : base(Assets.Level.Images.Refractor_ULxDL_L, position, open) { }
     }
 }

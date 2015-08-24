@@ -94,11 +94,16 @@ namespace DemeterEngine.Multiforms.Forms
 
 		public float Rotation { get; set; }
 
-		public SimpleTextForm(string text, string fontName, Vector2 position, bool centred = false, bool keepTime = true)
+        public SimpleTextForm(
+            string text, string fontName, Vector2 position, bool centred = false, bool keepTime = true)
+            : this(text, ArtManager.Font(fontName), position, centred, keepTime) { }
+
+		public SimpleTextForm(
+            string text, SpriteFont font, Vector2 position, bool centred = false, bool keepTime = true)
 			: base(keepTime)
 		{
 			Text = text;
-			Font = ArtManager.Font(fontName);
+			Font = font;
 			Position = position;
 			Centred = centred;
 			Tint = Color.White;

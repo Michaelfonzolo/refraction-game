@@ -71,16 +71,6 @@ namespace Refraction_V2.Multiforms.Level
         private bool Killed;
 
 		/// <summary>
-		/// The texture drawn at either end of a laser segment.
-		/// </summary>
-        private Texture2D HalfCircle;
-
-		/// <summary>
-		/// The texture drawn between either end of a laser segment.
-		/// </summary>
-        private Texture2D LaserSegmentTexture;
-
-		/// <summary>
 		/// This struct represents a single linear segment of a laser (usually between two refractors or
 		/// two solid tiles). It represents the line segment and the colour of the laser throughout this
 		/// segment. The segments are then rendered individually.
@@ -114,9 +104,6 @@ namespace Refraction_V2.Multiforms.Level
             CurrentDirection = initialDirection;
             CurrentColour = initialColour;
             Killed = false;
-
-            HalfCircle = ArtManager.Texture2D("HalfCircle");
-            LaserSegmentTexture = ArtManager.Texture2D("LightningSegment");
         }
 
 		/// <summary>
@@ -229,26 +216,29 @@ namespace Refraction_V2.Multiforms.Level
 			// This code almost directly ripped from
 			// http://gamedevelopment.tutsplus.com/tutorials/how-to-generate-shockingly-good-2d-lightning-effects--gamedev-2681
 
+            var cap = Assets.Shared.Images.LaserCap;
+            var segmentTexture = Assets.Shared.Images.LaserSegment;
+
             var tangent = segment.End - segment.Start;
             var rotation = (float)Math.Atan2(tangent.Y, tangent.X);
 
             var scale = 0.2f * (float)SpecialFunctions.SineSquared(LocalFrame / 50f) + 0.5f;
-            var capOrigin = new Vector2(HalfCircle.Width, HalfCircle.Height / 2f);
-            var middleOrigin = new Vector2(0, LaserSegmentTexture.Height / 2f);
+            var capOrigin = new Vector2(cap.Width, cap.Height / 2f);
+            var middleOrigin = new Vector2(0, segmentTexture.Height / 2f);
             var middleScale = new Vector2(tangent.Length(), scale);
 
             foreach (var color in new Color[] { segment.Color, Color.White })
             {
                 DisplayManager.Draw(
-                    LaserSegmentTexture, segment.Start, null, color,
+                    segmentTexture, segment.Start, null, color,
                     rotation, middleOrigin, middleScale, SpriteEffects.None, 0f);
 
                 DisplayManager.Draw(
-                    HalfCircle, segment.Start, null, color,
+                    cap, segment.Start, null, color,
                     rotation, capOrigin, scale, SpriteEffects.None, 0f);
 
                 DisplayManager.Draw(
-                    HalfCircle, segment.End, null, color,
+                    cap, segment.End, null, color,
                     rotation + (float)Math.PI, capOrigin, scale,
                     SpriteEffects.None, 0f);
             }

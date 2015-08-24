@@ -42,10 +42,8 @@ namespace Refraction_V2.Multiforms.LevelComplete
 	public class LevelCompleteTextForm : SimpleTextForm
 	{
 
-		public const string FontName = "LevelCompleteFont";
-
 		public LevelCompleteTextForm(string text, Vector2 position)
-			: base(text, FontName, position, true)
+			: base(text, Assets.LevelComplete.Fonts.LevelCompleteText, position, true)
 		{
 
 		}

@@ -36,6 +36,7 @@
 using DemeterEngine;
 using DemeterEngine.Graphics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 #endregion
 
@@ -48,9 +49,9 @@ namespace Refraction_V2.Multiforms.Level.Tiles
 
         public Sprite TileSprite { get; private set; }
 
-        public RefractorTile(string spriteName, Vector2 position, bool open) : base(position, open) 
+        public RefractorTile(Texture2D texture, Vector2 position, bool open) : base(position, open) 
         {
-            TileSprite = ArtManager.Sprite(spriteName);
+            TileSprite = new Sprite(texture);
             TileSprite.Position = position;
         }
 

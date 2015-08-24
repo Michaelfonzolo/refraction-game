@@ -72,7 +72,7 @@ namespace Refraction_V2.Multiforms.Level
             get
             {
 				return CurrentlySelectedTile.HasValue
-					|| InventoryQuantities[CurrentlySelectedTile.Value] != 0;
+					&& InventoryQuantities[CurrentlySelectedTile.Value] != 0;
             }
         }
 
@@ -89,7 +89,7 @@ namespace Refraction_V2.Multiforms.Level
         public InventoryForm(LevelInfo info)
             : base(true)
         {
-			ItemQuantityFont = ArtManager.Font("InventoryItemFont");
+			ItemQuantityFont = Assets.Level.Fonts.InventoryItem;
 
             try
             {
@@ -117,7 +117,6 @@ namespace Refraction_V2.Multiforms.Level
                 {
 					if (info.InactiveInventory.Contains(tileType))
 					{
-						// j++;
 						continue;
 					}
                     var collider = new RectCollider(

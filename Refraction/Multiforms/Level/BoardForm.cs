@@ -42,6 +42,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Refraction_V2.Multiforms.Level.Tiles;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 #endregion
 
@@ -92,9 +93,9 @@ namespace Refraction_V2.Multiforms.Level
             var dim = levelInfo.BoardDimensions;
             Dimensions = dim;
 
-            // Find the x and y offsets of the topleft corner of the board. ∞
-            var y = (DisplayManager.WindowResolution.Height - LevelInfo.TILE_SIDE_LENGTH * Dimensions.Y) / 2f;
-            var x = (DisplayManager.WindowResolution.Width
+            // Find the x and y offsets of the topleft corner of the board.
+            var y = (DisplayManager.WindowHeight - LevelInfo.TILE_SIDE_LENGTH * Dimensions.Y) / 2f;
+            var x = (DisplayManager.WindowWidth
                 - (LevelInfo.TILE_SIDE_LENGTH * dim.X
                    + 2 * LevelInfo.INVENTORY_BUTTON_WIDTH
                    + LevelInfo.BOARD_INVENTORY_GAP
@@ -146,20 +147,27 @@ namespace Refraction_V2.Multiforms.Level
                 // MousePressed property to true. When the user releases their mouse while
                 // on top of a tile, if that tile's MousePressed property is true, then the
                 // user has "clicked" on the tile.
-                if (MouseInput.IsClicked(MouseButtons.Left) ||
-					MouseInput.IsClicked(MouseButtons.Right) ||
-					MouseInput.IsClicked(MouseButtons.Middle))
-                    Board[yIndex, xIndex].MousePressed = true;
-
-                // If the user clicked on the tile...
-                if (Board[yIndex, xIndex].MousePressed)
+                foreach (var button in Enum.GetValues(typeof(MouseButtons)).Cast<MouseButtons>())
                 {
-					if (MouseInput.IsReleased(MouseButtons.Left))
-						SetTile(xIndex, yIndex);
-					else if (MouseInput.IsReleased(MouseButtons.Right))
-						RemoveTile(xIndex, yIndex);
-					else if (MouseInput.IsReleased(MouseButtons.Middle))
-						ChooseTile(xIndex, yIndex);
+                    if (MouseInput.IsClicked(button))
+                        Board[yIndex, xIndex].MousePressed[button] = true;
+                    else if (Board[yIndex, xIndex].MousePressed[button] && MouseInput.IsReleased(button))
+                    {
+                        switch (button)
+                        {
+                            case MouseButtons.Left:
+                                SetTile(xIndex, yIndex);
+                                break;
+                            case MouseButtons.Right:
+                                RemoveTile(xIndex, yIndex);
+                                break;
+                            case MouseButtons.Middle:
+                                ChooseTile(xIndex, yIndex);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                 }
             }
 
@@ -174,7 +182,8 @@ namespace Refraction_V2.Multiforms.Level
                 if (ix == xIndex && iy == yIndex)
                     continue;
                 Board[iy, ix].CollidingWithMouse = false;
-                Board[iy, ix].MousePressed = false;
+                foreach (var button in Enum.GetValues(typeof(MouseButtons)).Cast<MouseButtons>())
+                    Board[iy, ix].MousePressed[button] = false;
             }
 
             if (BoardChanged)

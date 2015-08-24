@@ -36,8 +36,12 @@
 
 using DemeterEngine;
 using DemeterEngine.Graphics;
+using DemeterEngine.Input;
 using DemeterEngine.Multiforms;
 using Microsoft.Xna.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 #endregion
 
@@ -61,7 +65,7 @@ namespace Refraction_V2.Multiforms.Level.Tiles
 		/// Whether or not the mouse is colliding with this tile and the mouse is pressed
 		/// (MouseButtons.Left).
 		/// </summary>
-        public bool MousePressed { get; internal set; }
+        public Dictionary<MouseButtons, bool> MousePressed { get; private set; }
 
 		/// <summary>
 		/// Whether or not the tile is open. An open tile is a tile that the player can
@@ -104,11 +108,15 @@ namespace Refraction_V2.Multiforms.Level.Tiles
             Position = position;
             Open = open;
 
-            EmptyTileSprite = ArtManager.Sprite("EmptyTile");
-            TileHoverSprite = ArtManager.Sprite("TileHover");
+            EmptyTileSprite = new Sprite(Assets.Level.Images.EmptyTile);
+            TileHoverSprite = new Sprite(Assets.Level.Images.TileHover);
 
             EmptyTileSprite.Position = position;
             TileHoverSprite.Position = position;
+
+            MousePressed = new Dictionary<MouseButtons, bool>();
+            foreach (var button in Enum.GetValues(typeof(MouseButtons)).Cast<MouseButtons>())
+                MousePressed[button] = false;
         }
 
         public override void Update()

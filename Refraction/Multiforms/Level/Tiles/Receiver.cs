@@ -66,7 +66,7 @@ namespace Refraction_V2.Multiforms.Level.Tiles
             InputDirection = direction;
             InputColour = colour;
 
-            TileSprite = ArtManager.Sprite("Receiver");
+            TileSprite = new Sprite(Assets.Level.Images.Receiver);
             TileSprite.CenterOn(Center);
             TileSprite.Rotation = Math.Atan2(InputDirection.Y, -InputDirection.X);
             TileSprite.Tint = InputColour.Color * 3f;

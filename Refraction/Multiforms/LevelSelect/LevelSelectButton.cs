@@ -39,6 +39,7 @@ using DemeterEngine.Input;
 using DemeterEngine.Multiforms.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 #endregion
 
@@ -56,21 +57,6 @@ namespace Refraction_V2.Multiforms.LevelSelect
         /// The height of the button sprite.
         /// </summary>
 		public const int BUTTON_HEIGHT = 50;
-
-        /// <summary>
-        /// The name of the button sprite for an uncleared level.
-        /// </summary>
-		public const string SpriteName_UnclearedLevel = "UnclearedLevelSelectButton";
-
-        /// <summary>
-        /// The name of the button sprite for a cleared level.
-        /// </summary>
-        public const string SpriteName_ClearedLevel = "ClearedLevelSelectButton";
-
-        /// <summary>
-        /// The name of the level number font.
-        /// </summary>
-		public const string FontName = "LevelSelect_LevelNoFont";
 
         /// <summary>
         /// The sprite representing the button.
@@ -147,8 +133,15 @@ namespace Refraction_V2.Multiforms.LevelSelect
 			LevelNo = levelNo;
             ScrollBar = scrollBar;
 
-			ButtonSprite = ArtManager.Sprite(SpriteName_UnclearedLevel);
-			LevelNoFont  = ArtManager.Font(FontName);
+            if (LoadedLevelManager.CompletedLevels.Contains(levelNo))
+            {
+                ButtonSprite = new Sprite(Assets.LevelSelect.Images.ClearedLevelButton);
+            }
+            else
+            {
+                ButtonSprite = new Sprite(Assets.LevelSelect.Images.UnclearedLevelButton);
+            }
+			LevelNoFont  = Assets.LevelSelect.Fonts.LevelNo;
 
 			ButtonSprite.Position = collider.TopLeft;
 			var textDimensions = LevelNoFont.MeasureString(LevelNo.ToString());
@@ -176,7 +169,7 @@ namespace Refraction_V2.Multiforms.LevelSelect
             if (ScrollBar == null)
                 return;
 
-            var offset = -(float)ScrollBar.DeltaSpanScrollValue;
+            var offset = -(float)ScrollBar.DeltaSpanScrollValue + 0.25f * (float)Math.Sin(LocalFrame / 20f);
             ((RectCollider)Collider).Translate(0, offset);
             TextPosition += new Vector2(0, offset);
         }

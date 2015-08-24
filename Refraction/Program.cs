@@ -53,7 +53,8 @@ namespace Refraction_V2
             using (var game = new RefractionGameKernel("Game1.gamesetup"))
             {
                 game.Run();
-            }                
+            }
+            UserConfig.Close();
         }
     }
 #endif

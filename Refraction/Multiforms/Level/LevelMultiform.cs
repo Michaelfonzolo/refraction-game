@@ -33,8 +33,15 @@
 
 #region Using Statements
 
+using DemeterEngine;
+using DemeterEngine.Input;
 using DemeterEngine.Multiforms;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;
 using Refraction_V2.Multiforms.LevelComplete;
+using Refraction_V2.Multiforms.LevelSelect;
+using Refraction_V2.Utils;
 using System;
 
 #endregion
@@ -44,7 +51,9 @@ namespace Refraction_V2.Multiforms.Level
     public class LevelMultiform : Multiform
     {
 
-		/// <summary>
+        #region Form Info
+
+        /// <summary>
 		/// The name of the multiform.
 		/// </summary>
 		public const string MultiformName = "Level";
@@ -59,10 +68,59 @@ namespace Refraction_V2.Multiforms.Level
 		/// </summary>
 		public const string InventoryFormName = "Inventory";
 
-		/// <summary>
+        /// <summary>
+        /// The name of the back button form instance.
+        /// </summary>
+        public const string BackButtonFormName = "BackButton";
+
+        /// <summary>
+        /// The GUIButtonInfo for the back button.
+        /// </summary>
+        public static readonly GUIButtonInfo BackButtonInfo = new GUIButtonInfo(
+            "Back", Assets.Level.Images.BackButton, Assets.Shared.Fonts.GUIButtonFont_Small);
+
+        /// <summary>
+        /// The bottom left of the back button.
+        /// </summary>
+        public static readonly Vector2 BackButtonBottomLeft = new Vector2(
+            10,
+            DisplayManager.WindowHeight - 10
+            );
+
+        /// <summary>
+        /// The messages displayed when the game is paused.
+        /// </summary>
+        public static readonly string[] PauseScreenMessages = new[] 
+        {
+            "PAUSED",
+            "PRESS ESCAPE TO RESUME"
+        };
+
+        /// <summary>
+        /// The centers of each message displayed when the game is paused.
+        /// </summary>
+        public static readonly Vector2[] PauseScreenMessageCenters = new[] 
+        {
+            new Vector2(DisplayManager.WindowWidth / 2f, DisplayManager.WindowHeight / 2f - 25),
+            new Vector2(DisplayManager.WindowWidth / 2f, DisplayManager.WindowHeight / 2f + 25)
+        };
+
+        /// <summary>
+        /// The colour of the text displayed when the game is paused.
+        /// </summary>
+        public static readonly Color PauseTextColour = Color.White;
+
+        #endregion
+
+        /// <summary>
 		/// The LevelNameInfo sent in from the previous multiform.
 		/// </summary>
 		public LevelNameInfo LevelNameInfo { get; private set; }
+
+        /// <summary>
+        /// Whether or not the level is paused.
+        /// </summary>
+        public bool Paused { get; private set; }
 
         public override void Construct(MultiformTransmissionData args)
         {
@@ -78,6 +136,8 @@ namespace Refraction_V2.Multiforms.Level
             var levelInfo = new LevelInfo(LevelNameInfo.LevelName);
             RegisterForm(BoardFormName, new BoardForm(levelInfo));
             RegisterForm(InventoryFormName, new InventoryForm(levelInfo));
+            RegisterForm(BackButtonFormName, new GUIButton(
+                BackButtonInfo, BackButtonBottomLeft, PositionType.BottomLeft));
 
             SetUpdater(Update_Main);
             SetRenderer(Render_Main);
@@ -87,29 +147,79 @@ namespace Refraction_V2.Multiforms.Level
         {
             base.UpdateTime();
 
-            UpdateForms();
+            if (KeyboardInput.IsReleased(Keys.Escape))
+            {
+                Paused ^= true;
+            }
 
-            var form = GetForm<BoardForm>(BoardFormName);
-            if (form.LevelComplete)
-			{
-				Console.WriteLine("Yay!");
+            if (!Paused)
+            {
+                UpdateForms();
 
-				if (LevelNameInfo.Sequential)
-					LoadedLevelManager.CompletedLevels.Add(LevelNameInfo.LevelNumber.Value);
+                var form = GetForm<BoardForm>(BoardFormName);
+                if (form.LevelComplete)
+                {
+                    if (LevelNameInfo.Sequential)
+                        LoadedLevelManager.CompletedLevels.Add(LevelNameInfo.LevelNumber.Value);
 
-				var data = new MultiformTransmissionData(MultiformName);
-				data.SetAttr<LevelNameInfo>("LevelNameInfo", LevelNameInfo);
+                    var data = new MultiformTransmissionData(MultiformName);
+                    data.SetAttr<LevelNameInfo>("LevelNameInfo", LevelNameInfo);
 
-				Manager.Close(this);
-				Manager.Construct(LevelCompleteMultiform.MultiformName, data);
+                    Manager.Close(this);
+                    Manager.Construct(LevelCompleteMultiform.MultiformName, data);
 
-				ClearForms();
-			}
+                    ClearForms();
+
+                    return;
+                }
+
+                if (GetForm<GUIButton>(BackButtonFormName).IsReleased(MouseButtons.Left))
+                {
+                    Manager.Close(this);
+                    Manager.Construct(LevelSelectMultiform.MultiformName);
+                    ClearForms();
+
+                    return;
+                }
+            }
         }
 
         public void Render_Main()
         {
-            RenderForms(BoardFormName, InventoryFormName);
+            RenderForms(BoardFormName, InventoryFormName, BackButtonFormName);
+            
+            if (Paused)
+            {
+                Render_PauseOverlay();
+            }
+
+        }
+
+        private void Render_PauseOverlay()
+        {
+            var dummyTexture = new Texture2D(DisplayManager.GraphicsDevice, 1, 1);
+            dummyTexture.SetData(new Color[] { Color.Black * 0.75f });
+
+            DisplayManager.SetSpriteBatchProperties(blendState: BlendState.NonPremultiplied);
+
+            DisplayManager.Draw(
+                dummyTexture, Vector2.Zero, null, Color.White, 0, Vector2.Zero, 
+                new Vector2(DisplayManager.WindowWidth, DisplayManager.WindowHeight), 
+                SpriteEffects.None, 0f);
+
+            DisplayManager.ClearSpriteBatchProperties();
+
+            for (int i = 0; i < PauseScreenMessages.Length; i++)
+            {
+                RenderPauseMessage(PauseScreenMessages[i], PauseScreenMessageCenters[i]);
+            }
+        }
+
+        private void RenderPauseMessage(string message, Vector2 center)
+        {
+            var dimensions = Assets.Level.Fonts.PauseText.MeasureString(message);
+            var topleft = PositionConverter.ToTopLeft(center, dimensions.X, dimensions.Y, PositionType.Center);
+            DisplayManager.DrawString(Assets.Level.Fonts.PauseText, message, topleft, PauseTextColour);
         }
 
     }

@@ -49,15 +49,36 @@ namespace DemeterEngine.Multiforms.Forms
     public class ButtonForm : Form
     {
 
+        private Collidable _collider;
+
 		/// <summary>
 		/// The collider representing the area the mouse can click.
 		/// </summary>
-        public Collidable Collider { get; private set; }
+        public Collidable Collider 
+        {
+            get { return _collider; } 
+            set 
+            {
+                if (Begun)
+                    throw new ArgumentException("Cannot set collider after form has begun updating.");
+                _collider = value;
+            } 
+        }
 
 		/// <summary>
 		/// Whether or not the mouse is colliding with this button.
 		/// </summary>
         public bool CollidingWithMouse { get; internal set; }
+
+        /// <summary>
+        /// This flag is true for the first frame that the mouse enters the button's collider.
+        /// </summary>
+        public bool MouseEntered { get { return MouseCollidingFor == 1; } }
+
+        /// <summary>
+        /// How many frames the mouse has been colliding with this button for.
+        /// </summary>
+        public int MouseCollidingFor { get; private set; }
 
         /// <summary>
         /// Whether or not interaction with this button is locked.
@@ -93,14 +114,8 @@ namespace DemeterEngine.Multiforms.Forms
         {
             Collider = collider;
             CollidingWithMouse = false;
+            MouseCollidingFor = 0;
         }
-
-		public void PostSetCollider(Collidable collider)
-		{
-			if (Collider != null)
-				throw new ArgumentException("Collider already set.");
-			Collider = collider;
-		}
 
         public void LockInteraction()
         {
@@ -159,6 +174,14 @@ namespace DemeterEngine.Multiforms.Forms
                     Collider.CollidingWith(
                         new PointCollider(MouseInput.MousePosition));
                 CollidingWithMouse = response == null ? false : response.Colliding;
+                if (CollidingWithMouse)
+                {
+                    MouseCollidingFor++;
+                }
+                else
+                {
+                    MouseCollidingFor = 0;
+                }
             }
 
             foreach (var button in Enum.GetValues(typeof(MouseButtons)).Cast<MouseButtons>())
