@@ -16,7 +16,7 @@
 #begin Level/Fonts/InventoryItem.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
+/processorParam:TextureFormat=NoChange
 /build:Level/Fonts/InventoryItem.spritefont
 
 #begin Level/Fonts/PauseText.spritefont

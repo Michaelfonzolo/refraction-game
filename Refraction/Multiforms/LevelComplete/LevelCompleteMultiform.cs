@@ -103,7 +103,7 @@ namespace Refraction_V2.Multiforms.LevelComplete
         public static readonly Vector2 ReplayButtonCenter = DisplayManager.WindowResolution.Center;
 
         public static readonly GUIButtonInfo ReplayButtonInfo = new GUIButtonInfo(
-            "Replay", Assets.LevelComplete.Images.ReplayButton);
+            "REPLAY", Assets.LevelComplete.Images.ReplayButton);
 
         /// <summary>
         /// The center of the "previous level" button on screen.
@@ -114,7 +114,7 @@ namespace Refraction_V2.Multiforms.LevelComplete
             );
 
         public static readonly GUIButtonInfo PrevButtonInfo = new GUIButtonInfo(
-            "Previous", Assets.LevelComplete.Images.PrevButton);
+            "PREV", Assets.LevelComplete.Images.PrevButton);
 
         /// <summary>
         /// The center of the "next level" button on screen.
@@ -125,7 +125,7 @@ namespace Refraction_V2.Multiforms.LevelComplete
             );
 
         public static readonly GUIButtonInfo NextButtonInfo = new GUIButtonInfo(
-            "Next", Assets.LevelComplete.Images.NextButton);
+            "NEXT", Assets.LevelComplete.Images.NextButton);
 
         /// <summary>
         /// The center of the "back" button on screen.
@@ -136,7 +136,7 @@ namespace Refraction_V2.Multiforms.LevelComplete
             );
 
         public static readonly GUIButtonInfo BackButtonInfo = new GUIButtonInfo(
-            "Back", Assets.LevelComplete.Images.BackButton, Assets.Shared.Fonts.GUIButtonFont_Small);
+            "BACK", Assets.LevelComplete.Images.BackButton, Assets.Shared.Fonts.GUIButtonFont_Small);
 
 		#endregion
 
@@ -149,9 +149,11 @@ namespace Refraction_V2.Multiforms.LevelComplete
 				LevelNameInfo = args.GetAttr<LevelNameInfo>("LevelNameInfo");
 			}
 			else
-				throw new MultiformException(
-					String.Format("Unknown multiform layout: '{0}' -> '{1}'.", args.SenderName, MultiformName)
-					);
+            {
+                throw new MultiformException(
+                    String.Format("Unknown multiform layout: '{0}' -> '{1}'.", args.SenderName, MultiformName)
+                    );
+            }
 
 			Construct_Text();
 			Construct_Buttons();
@@ -167,9 +169,9 @@ namespace Refraction_V2.Multiforms.LevelComplete
 		{
 			string text;
 			if (LevelNameInfo.Sequential)
-				text = String.Format("Level {0} Complete", LevelNameInfo.LevelNumber + 1);
+				text = String.Format("LEVEL {0} COMPLETE", LevelNameInfo.LevelNumber + 1);
 			else
-				text = "Level Complete";
+				text = "LEVEL COMPLETE";
 
 			RegisterForm(
                 LevelCompleteTextFormName, 

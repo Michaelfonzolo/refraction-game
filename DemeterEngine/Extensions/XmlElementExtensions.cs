@@ -33,6 +33,7 @@
 
 #region Using Statements
 
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 
@@ -43,6 +44,16 @@ namespace DemeterEngine.Extensions
 	public static class XmlElementExtensions
 	{
 
+        /// <summary>
+        /// Return only the child elements of an xml element.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        public static List<XmlElement> ChildElements(this XmlElement element)
+        {
+            return element.ChildNodes.OfType<XmlElement>().ToList();
+        }
+
 		/// <summary>
 		/// Find a child with a given name in an element.
 		/// </summary>
@@ -51,7 +62,7 @@ namespace DemeterEngine.Extensions
 		/// <returns></returns>
 		public static XmlElement FindChild(this XmlElement element, string name)
 		{
-			foreach (var child in element.ChildNodes.Cast<XmlElement>())
+			foreach (var child in element.ChildElements())
 				if (child.Name == name)
 					return child;
 			return null;
@@ -67,7 +78,7 @@ namespace DemeterEngine.Extensions
 			return !element.HasChildNodes ||
 				   element.ChildNodes
 						  .Cast<XmlNode>()
-						  .All(item => item is XmlText);
+						  .All(item => item is XmlText || item is XmlComment);
 		}
 
 		/// <summary>
@@ -78,7 +89,7 @@ namespace DemeterEngine.Extensions
 		/// <returns></returns>
 		public static XmlElement FindTerminalChild(this XmlElement element, string name)
 		{
-			foreach (var child in element.ChildNodes.Cast<XmlElement>())
+			foreach (var child in element.ChildElements())
 			{
 				if (child.Name == name && child.IsTerminal())
 					return child;

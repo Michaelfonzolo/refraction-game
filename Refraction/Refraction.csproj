@@ -40,8 +40,12 @@
   <ItemGroup>
     <Compile Include="Assets.cs" />
     <Compile Include="LoadedLevelManager.cs" />
+    <Compile Include="Multiforms\AnimatedLaserSegment.cs" />
+    <Compile Include="Multiforms\Effectors\FadeOutEffector.cs" />
     <Compile Include="Multiforms\GUIButton.cs" />
     <Compile Include="Multiforms\GUIButtonInfo.cs" />
+    <Compile Include="Multiforms\ITransitionalForm.cs" />
+    <Compile Include="Multiforms\LaserSegment.cs" />
     <Compile Include="Multiforms\LevelComplete\LevelCompleteMultiform.cs" />
     <Compile Include="Multiforms\LevelComplete\LevelCompleteTextForm.cs" />
     <Compile Include="Multiforms\LevelSelect\LevelSelectScrollBar.cs" />
@@ -77,6 +81,9 @@
     <Compile Include="Multiforms\Level\TileType.cs" />
     <Compile Include="Multiforms\MainMenu\LogoForm.cs" />
     <Compile Include="Multiforms\MainMenu\MainMenuMultiform.cs" />
+    <Compile Include="Multiforms\MainMenu\TransitionAnimations\Play\LaserRadiusAnimation.cs" />
+    <Compile Include="Multiforms\MainMenu\TransitionAnimations\Play\PlayAnimationForm.cs" />
+    <Compile Include="Multiforms\RadialAnimatedLaser.cs" />
     <Compile Include="OptionsManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -85,6 +92,7 @@
     <Compile Include="Utils\PositionType.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MSBuildProgramFiles32)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>

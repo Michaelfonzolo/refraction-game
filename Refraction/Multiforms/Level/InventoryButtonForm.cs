@@ -41,6 +41,7 @@ using DemeterEngine;
 using DemeterEngine.Collision;
 using DemeterEngine.Graphics;
 using DemeterEngine.Multiforms.Forms;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 
@@ -71,13 +72,140 @@ namespace Refraction_V2.Multiforms.Level
         /// </summary>
         public Sprite HoverSprite { get; private set; }
 
-        public InventoryButtonForm(TileType type, RectCollider collider)
-            : base(collider, true)
+        /// <summary>
+        /// The number of items of this button's type left in the player's inventory.
+        /// </summary>
+        public int Quantity { get; private set; }
+
+        /// <summary>
+        /// Whether or not the quantity has changed. Used to indicate when to start
+        /// scaling the quantity text.
+        /// </summary>
+        private bool QuantityChanged = false;
+
+        /// <summary>
+        /// The font used to display the quantity.
+        /// </summary>
+        public SpriteFont QuantityFont { get; private set; }
+
+        /// <summary>
+        /// The position of the quantity text.
+        /// </summary>
+        public Vector2 QuantityTextPosition { get; private set; }
+
+        /// <summary>
+        /// The amount by which we offset the quantity text position.
+        /// </summary>
+        private static readonly Vector2 QUANTITY_TEXT_POS_OFFSET = new Vector2(28, 0);
+
+        /// <summary>
+        /// Information regarding the fading in and out of the hover sprite.
+        /// </summary>
+        #region Hover Sprite Alpha Properties
+
+        private float HoverSpriteAlpha = 0f;
+
+        private const float HOVER_ALPHA_INCREMENT = 0.1f;
+
+        private const float HOVER_ALPHA_MIN = 0f;
+
+        private const float HOVER_ALPHA_MAX = 1f;
+
+        private const int HOVER_ALPHA_MULTIPLIER = 130;
+
+        #endregion
+
+        /// <summary>
+        /// Information regarding the scaling of the quantity text when the quantity changes.
+        /// </summary>
+        #region Quantity Text Scale Function Properties
+
+        private float QuantityTextScale = QUANTITY_TEXT_SCALE_DEFAULT;
+
+        private float QuantityTextScaleTime = 0f;
+
+        private static readonly float QUANTITY_TEXT_SCALE_TIME_MAX = QTS_X1 + QTS_X2;
+
+        private const float QUANTITY_TEXT_SCALE_TIME_INCREMENT = 0.03f;
+
+        private const float QUANTITY_TEXT_SCALE_DEFAULT = 0.5f;
+
+        /// <summary>
+        /// The initial y-value of the text scale function.
+        /// </summary>
+        private const float QTS_Y0 = 0.5f;
+
+        /// <summary>
+        /// The maximum y-value of the text scale function.
+        /// </summary>
+        private const float QTS_Y1 = 0.8f;
+
+        /// <summary>
+        /// The initial x-value of the text scale function.
+        /// </summary>
+        private const float QTS_X0 = 0f;
+
+        /// <summary>
+        /// The x-value midway between the two piecewise components of the text scale function.
+        /// </summary>
+        private const float QTS_X1 = 0.1f;
+
+        /// <summary>
+        /// The maximum x-value of the text scale function.
+        /// </summary>
+        private const float QTS_X2 = 1.2f;
+
+        /// <summary>
+        /// The exponent in the text scale function's auxiliary function.
+        /// </summary>
+        private const float QTS_B = 3f;
+
+        /// <summary>
+        /// Auxiliary function e^(-|x|^b) used in the second piecewise component
+        /// of the text scale function.
+        /// </summary>
+        private static float Phi(float time, float b)
+        {
+            return (float)Math.Exp(-Math.Pow(Math.Abs(time), b));
+        }
+
+        /// <summary>
+        /// This is the function that controls how the quantity text scales when
+        /// the quantity changes. It is a C1-continuous piecewise function constructed
+        /// by patching together sin^2(x) and e^(-|x|^b)*cos^2(x).
+        /// </summary>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        private float TextScaleFunction(float time)
+        {
+            var x1 = (float) Math.PI / 2 * (time - QTS_X0) / (QTS_X1 - QTS_X0);
+            var x2 = (float) Math.PI / 2 * (time - QTS_X1) / (QTS_X2 - QTS_X1);
+            if (QTS_X0 <= time && time < QTS_X1)
+            {
+                return QTS_Y0 + (QTS_Y1 - QTS_Y0) * (float)Math.Pow(Math.Sin(x1), 2.0);
+            }
+            else if (QTS_X1 <= time && time < QTS_X2)
+            {
+                return QTS_Y0 + (QTS_Y1 - QTS_Y0) * Phi(x2, QTS_B);
+            }
+            return QTS_Y0;
+        }
+
+        #endregion
+
+        public InventoryButtonForm(TileType type, Vector2 topLeft, int quantity)
+            : base(null, true)
         {
             Type = type;
             Sprite = new Sprite(GetSpriteName(type));
             ButtonSprite = new Sprite(Assets.Level.Images.InventoryButton);
-            HoverSprite = new Sprite(Assets.Level.Images.InventoryButtonHover);
+            HoverSprite  = new Sprite(Assets.Level.Images.InventoryButtonHover);
+
+            Collider = new RectCollider(topLeft, ButtonSprite.Width, ButtonSprite.Height);
+
+            Quantity = quantity;
+            QuantityFont = Assets.Level.Fonts.InventoryItem;
+            QuantityTextPosition = ((RectCollider)Collider).Center + QUANTITY_TEXT_POS_OFFSET;
         }
 
         private Texture2D GetSpriteName(TileType type)
@@ -105,14 +233,79 @@ namespace Refraction_V2.Multiforms.Level
             }
         }
 
+        public override void Update()
+        {
+            base.Update();
+
+            var increment = (CollidingWithMouse ? 1 : -1) * HOVER_ALPHA_INCREMENT;
+            HoverSpriteAlpha = MathHelper.Clamp(
+                HoverSpriteAlpha + increment, 
+                HOVER_ALPHA_MIN, 
+                HOVER_ALPHA_MAX);
+
+            if (QuantityTextScaleTime > 0)
+            {
+                QuantityTextScale = TextScaleFunction(QuantityTextScaleTime);
+                QuantityTextScaleTime += QUANTITY_TEXT_SCALE_TIME_INCREMENT;
+
+                if (QuantityTextScaleTime >= QUANTITY_TEXT_SCALE_TIME_MAX)
+                {
+                    QuantityTextScaleTime = 0f;
+                }
+            }
+            else
+            {
+                QuantityTextScale = QUANTITY_TEXT_SCALE_DEFAULT;
+            }
+            if (QuantityChanged)
+            {
+                QuantityChanged = false;
+                QuantityTextScaleTime = QUANTITY_TEXT_SCALE_TIME_INCREMENT;
+            }
+        }
+
+        public void IncrementQuantity()
+        {
+            if (Quantity != LevelInfo.INFINITE_ITEMS_IN_INVENTORY)
+            {
+                Quantity++;
+                QuantityChanged = true;
+            }
+        }
+
+        public void DecrementQuantity()
+        {
+            if (Quantity != LevelInfo.INFINITE_ITEMS_IN_INVENTORY)
+            {
+                Quantity--;
+                QuantityChanged = true;
+            }
+        }
+
         public override void Render()
         {
             var pos = ((RectCollider)Collider).TopLeft;
 
             ButtonSprite.Render(pos);
             Sprite.Render(pos);
-            if (CollidingWithMouse)
+
+            var text = Quantity == LevelInfo.INFINITE_ITEMS_IN_INVENTORY 
+                                ? "INF" 
+                                : String.Format("x{0}", Quantity);
+            var textOffset = QuantityFont.MeasureString(text) / 2f;
+            DisplayManager.DrawString(
+                QuantityFont, text, QuantityTextPosition, Color.White, 0f, 
+                textOffset, QuantityTextScale, SpriteEffects.None, 0f);
+            
+            if (HoverSpriteAlpha != 0)
+            {
+                DisplayManager.SetSpriteBatchProperties(blendState: BlendState.NonPremultiplied);
+
+                HoverSprite.Alpha = HOVER_ALPHA_MULTIPLIER * HoverSpriteAlpha;
                 HoverSprite.Render(pos);
+
+                DisplayManager.ClearSpriteBatchProperties();
+            }
         }
     }
 }

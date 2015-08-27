@@ -36,6 +36,7 @@
 
 #region Using Statements
 
+using DemeterEngine.Extensions;
 using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
@@ -49,21 +50,6 @@ namespace Refraction_V2.Multiforms.Level
 
     public class LevelInfo
     {
-
-        /// <summary>
-        /// The side length of a board tile.
-        /// </summary>
-        public const int TILE_SIDE_LENGTH = 55;
-
-        /// <summary>
-        /// The width of an inventory button.
-        /// </summary>
-        public const int INVENTORY_BUTTON_WIDTH = 100;
-
-        /// <summary>
-        /// The height of an inventory button.
-        /// </summary>
-        public const int INVENTORY_BUTTON_HEIGHT = 55;
 
         /// <summary>
         /// The length of the gap between the board and the inventory.
@@ -355,7 +341,7 @@ namespace Refraction_V2.Multiforms.Level
 				Error_UnexpectedRootNodes();
 
 			// We grab roots[1] in order to skip the XmlDeclaration.
-            var root = roots[1];
+            var root = roots[1] as XmlElement;
 			if (root.Name != ROOT_ELEMENT)
 				Error_UnexpectedRootNodeName(root.Name);
 
@@ -365,7 +351,7 @@ namespace Refraction_V2.Multiforms.Level
 
             bool boardLoaded = false, inventoryLoaded = false;
 
-            foreach (var child in root.ChildNodes.Cast<XmlElement>())
+            foreach (var child in root.ChildElements())
             {
 				if (child.Name == BOARD_ELEMENT && !boardLoaded)
 				{
@@ -417,7 +403,7 @@ namespace Refraction_V2.Multiforms.Level
 
             var emptyRowIndices = new List<EmptyRowIndexStruct>();
 
-            foreach (var child in boardElement.ChildNodes.Cast<XmlElement>())
+            foreach (var child in boardElement.ChildElements())
             {
                 if (child.Name == ROW_ELEMENT)
                 {
@@ -503,7 +489,7 @@ namespace Refraction_V2.Multiforms.Level
 		/// <param name="currentRow"></param>
         private void LoadRow(XmlElement rowElement, List<TileInfo> currentRow)
         {
-            foreach (var child in rowElement.ChildNodes.Cast<XmlElement>())
+            foreach (var child in rowElement.ChildElements())
             {
                 switch (child.Name)
                 {

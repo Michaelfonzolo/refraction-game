@@ -77,7 +77,7 @@ namespace Refraction_V2.Multiforms.Level
         /// The GUIButtonInfo for the back button.
         /// </summary>
         public static readonly GUIButtonInfo BackButtonInfo = new GUIButtonInfo(
-            "Back", Assets.Level.Images.BackButton, Assets.Shared.Fonts.GUIButtonFont_Small);
+            "BACK", Assets.Level.Images.BackButton, Assets.Shared.Fonts.GUIButtonFont_Small);
 
         /// <summary>
         /// The bottom left of the back button.
@@ -192,7 +192,6 @@ namespace Refraction_V2.Multiforms.Level
             {
                 Render_PauseOverlay();
             }
-
         }
 
         private void Render_PauseOverlay()

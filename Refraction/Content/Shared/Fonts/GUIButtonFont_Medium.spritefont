@@ -11,13 +11,14 @@ with.
     <!--
     Modify this string to change the font that will be imported.
     -->
-    <FontName>Bauhaus 93</FontName>
+    <FontName>Gearus</FontName>
 
     <!--
     Size is a float value, measured in points. Modify this value to change
     the size of the font.
     -->
-    <Size>28</Size>
+    <!-- For Bauhaus 93, the font size should be 28 -->
+    <Size>20</Size>
 
     <!--
     Spacing is a float value, measured in pixels. Modify this value to change

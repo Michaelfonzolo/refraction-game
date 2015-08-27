@@ -39,6 +39,7 @@ using DemeterEngine.Graphics;
 using DemeterEngine.Input;
 using DemeterEngine.Multiforms;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -86,8 +87,8 @@ namespace Refraction_V2.Multiforms.Level.Tiles
             get
             {
                 return new Vector2(
-                    Position.X + LevelInfo.TILE_SIDE_LENGTH / 2f,
-                    Position.Y + LevelInfo.TILE_SIDE_LENGTH / 2f
+                    Position.X + EmptyTileSprite.Width / 2f,
+                    Position.Y + EmptyTileSprite.Height / 2f
                     );
             }
         }
@@ -102,11 +103,22 @@ namespace Refraction_V2.Multiforms.Level.Tiles
 		/// </summary>
         public Sprite TileHoverSprite { get; private set; }
 
+        public float HoverSpriteAlpha { get; set; }
+
+        private const float HOVER_ALPHA_INCREMENT = 0.05f;
+
+        private const float HOVER_ALPHA_MIN = 0f;
+
+        private const float HOVER_ALPHA_MAX = 1f;
+
+        private const int HOVER_ALPHA_MULTIPLIER = 100;
+
         public LevelTile(Vector2 position, bool open)
             : base(false)
         {
             Position = position;
             Open = open;
+            HoverSpriteAlpha = 0f;
 
             EmptyTileSprite = new Sprite(Assets.Level.Images.EmptyTile);
             TileHoverSprite = new Sprite(Assets.Level.Images.TileHover);
@@ -122,7 +134,17 @@ namespace Refraction_V2.Multiforms.Level.Tiles
         public override void Update()
         {
             base.Update();
-            CollidingWithMouse = false;
+
+            if (CollidingWithMouse)
+            {
+                HoverSpriteAlpha += HOVER_ALPHA_INCREMENT;
+                HoverSpriteAlpha = Math.Min(HoverSpriteAlpha, HOVER_ALPHA_MAX);
+            }
+            else
+            {
+                HoverSpriteAlpha -= HOVER_ALPHA_INCREMENT;
+                HoverSpriteAlpha = Math.Max(HoverSpriteAlpha, HOVER_ALPHA_MIN);
+            }
         }
 
         public override void Render()
@@ -130,8 +152,14 @@ namespace Refraction_V2.Multiforms.Level.Tiles
             if (Open)
             {
                 EmptyTileSprite.Render();
-                if (CollidingWithMouse)
+
+                if (HoverSpriteAlpha != 0)
+                {
+                    DisplayManager.SetSpriteBatchProperties(blendState: BlendState.NonPremultiplied);
+                    TileHoverSprite.Alpha = HOVER_ALPHA_MULTIPLIER * HoverSpriteAlpha;
                     TileHoverSprite.Render();
+                    DisplayManager.ClearSpriteBatchProperties();
+                }
             }
         }
 

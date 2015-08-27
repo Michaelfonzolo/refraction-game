@@ -76,9 +76,19 @@ namespace DemeterEngine.Multiforms.Forms
         public bool MouseEntered { get { return MouseCollidingFor == 1; } }
 
         /// <summary>
+        /// This flag is true for the first frame that the mouse is outside the button's collider.
+        /// </summary>
+        public bool MouseExited { get { return MouseNotCollidingFor == 1; } }
+
+        /// <summary>
         /// How many frames the mouse has been colliding with this button for.
         /// </summary>
         public int MouseCollidingFor { get; private set; }
+
+        /// <summary>
+        /// How many frames the mouse has not been colliding with this button for.
+        /// </summary>
+        public int MouseNotCollidingFor { get; private set; }
 
         /// <summary>
         /// Whether or not interaction with this button is locked.
@@ -115,6 +125,7 @@ namespace DemeterEngine.Multiforms.Forms
             Collider = collider;
             CollidingWithMouse = false;
             MouseCollidingFor = 0;
+            MouseNotCollidingFor = 0;
         }
 
         public void LockInteraction()
@@ -177,10 +188,12 @@ namespace DemeterEngine.Multiforms.Forms
                 if (CollidingWithMouse)
                 {
                     MouseCollidingFor++;
+                    MouseNotCollidingFor = 0;
                 }
                 else
                 {
                     MouseCollidingFor = 0;
+                    MouseNotCollidingFor++;
                 }
             }
 

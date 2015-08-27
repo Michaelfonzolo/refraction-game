@@ -48,30 +48,30 @@ namespace DemeterEngine.Effectors
         /// <summary>
         /// The form this effector is attached to.
         /// </summary>
-        public Form form { get; private set; }
+        public Form Form { get; private set; }
 
         /// <summary>
         /// Whether or not this effector is dead (finished, in which case it is deleted).
         /// </summary>
-        public bool dead { get; private set; }
+        public bool Dead { get; private set; }
 
-        private bool initialized = false;
+        private bool Initialized = false;
 
         public Effector(Form form)
             : base(true)
         {
-            this.form = form;
-            dead = false;
+            this.Form = form;
+            Dead = false;
 
             Initialize();
-            initialized = true;
+            Initialized = true;
         }
 
         public Effector()
             : base(true)
         {
-            form = null;
-            dead = false;
+            Form = null;
+            Dead = false;
             // We can't call Initialize from here, because no form has been attached.
         }
 
@@ -81,11 +81,11 @@ namespace DemeterEngine.Effectors
         /// <param name="form"></param>
         public void AttachTo(Form form)
         {
-            if (this.form != null)
+            if (this.Form != null)
                 throw new ArgumentException("This effector is already attached to a form.");
-            this.form = form;
+            this.Form = form;
             Initialize();
-            initialized = true;
+            Initialized = true;
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace DemeterEngine.Effectors
         /// </summary>
         public virtual void Update()
         {
-            if (!initialized)
+            if (!Initialized)
                 throw new EffectorException(
                     "Cannot begin updating an effector that hasn't been initialized. " +
                      "To initialize an effector, simply attach it to a form.");
@@ -109,7 +109,7 @@ namespace DemeterEngine.Effectors
 
         public void Kill()
         {
-            dead = true;
+            Dead = true;
         }
 
     }

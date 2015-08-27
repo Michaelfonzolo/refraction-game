@@ -58,12 +58,6 @@ namespace Refraction_V2.Multiforms.Level
         public TileType? CurrentlySelectedTile { get; internal set; }
 
 		/// <summary>
-		/// The dictionary mapping tile types to their associated quantity left in
-		/// the player's inventory.
-		/// </summary>
-        public Dictionary<TileType, int> InventoryQuantities { get; private set; }
-
-		/// <summary>
 		/// A bool determining whether or not the player can place the currently
 		/// selected tile (if it is not null).
 		/// </summary>
@@ -72,14 +66,15 @@ namespace Refraction_V2.Multiforms.Level
             get
             {
 				return CurrentlySelectedTile.HasValue
-					&& InventoryQuantities[CurrentlySelectedTile.Value] != 0;
+					&& InventoryButtons[CurrentlySelectedTile.Value].Quantity != 0;
             }
         }
 
 		/// <summary>
-		/// The list of inventory button forms.
+		/// The dictionary of inventory button forms.
 		/// </summary>
-        public List<InventoryButtonForm> InventoryButtons = new List<InventoryButtonForm>();
+        public Dictionary<TileType, InventoryButtonForm> InventoryButtons
+            = new Dictionary<TileType, InventoryButtonForm>();
 
 		/// <summary>
 		/// The font used to display item quantities.
@@ -99,16 +94,18 @@ namespace Refraction_V2.Multiforms.Level
             {
                 CurrentlySelectedTile = null;
             }
-            InventoryQuantities = info.Inventory;
 
-            var inv_h = LevelInfo.INVENTORY_BUTTON_HEIGHT * LevelInfo.InventoryTileOrder[0].Length;
-			var y = (DisplayManager.WindowResolution.Height - inv_h - LevelInfo.INVENTORY_BUTTON_HEIGHT) / 2; 
+            var invButtonWidth  = Assets.Level.Images.InventoryButton.Width;
+            var invButtonHeight = Assets.Level.Images.InventoryButton.Height;
 
-            var inv_w = LevelInfo.INVENTORY_BUTTON_WIDTH * LevelInfo.InventoryTileOrder.Length;
+            var inv_h = invButtonHeight * LevelInfo.InventoryTileOrder[0].Length;
+			var y = (DisplayManager.WindowResolution.Height - inv_h - invButtonHeight) / 2; 
+
+            var inv_w = invButtonWidth * LevelInfo.InventoryTileOrder.Length;
             var x = (DisplayManager.WindowResolution.Width
-                     + LevelInfo.TILE_SIDE_LENGTH * info.BoardDimensions.X
+                     + Assets.Level.Images.EmptyTile.Width * info.BoardDimensions.X
                      + LevelInfo.BOARD_INVENTORY_GAP) / 2f
-                  - LevelInfo.INVENTORY_BUTTON_WIDTH;
+                  - invButtonWidth;
 
             int i = 0, j = 0;
             foreach (var column in LevelInfo.InventoryTileOrder)
@@ -119,11 +116,11 @@ namespace Refraction_V2.Multiforms.Level
 					{
 						continue;
 					}
-                    var collider = new RectCollider(
-                        x + i * LevelInfo.INVENTORY_BUTTON_WIDTH, y + j * LevelInfo.INVENTORY_BUTTON_HEIGHT,
-                        LevelInfo.INVENTORY_BUTTON_WIDTH, LevelInfo.INVENTORY_BUTTON_HEIGHT);
-                    var button = new InventoryButtonForm(tileType, collider);
-                    InventoryButtons.Add(button);
+                    var position = new Vector2(
+                        x + i * invButtonWidth, 
+                        y + j * invButtonHeight);
+                    var button = new InventoryButtonForm(tileType, position, info.Inventory[tileType]);
+                    InventoryButtons.Add(tileType, button);
                     j++;
                 }
                 i++;
@@ -131,42 +128,48 @@ namespace Refraction_V2.Multiforms.Level
             }
         }
 
+        public void IncrementTileCount(TileType type)
+        {
+            InventoryButtons[type].IncrementQuantity();
+        }
+
+        public void DecrementTileCount(TileType type)
+        {
+            InventoryButtons[type].DecrementQuantity();
+        }
+
 		/// <summary>
 		/// Decrement the quantity of the current tile.
 		/// </summary>
         public void DecrementCurrentTileCount()
         {
-            if (InventoryQuantities[CurrentlySelectedTile.Value] <= 0)
-                return;
-            InventoryQuantities[CurrentlySelectedTile.Value]--;
+            DecrementTileCount(CurrentlySelectedTile.Value);
         }
 
         public override void Update()
         {
             base.Update();
 
-            foreach (var button in InventoryButtons)
+            TileType type;
+            InventoryButtonForm button;
+            foreach (var kvp in InventoryButtons)
             {
+                type = kvp.Key;
+                button = kvp.Value;
+
                 button.Update();
                 if (button.IsReleased(MouseButtons.Left))
-                    CurrentlySelectedTile = button.Type;
+                {
+                    CurrentlySelectedTile = type;
+                }
             }
         }
 
         public override void Render()
         {
-            foreach (var button in InventoryButtons)
+            foreach (var button in InventoryButtons.Values)
 			{
 				button.Render();
-
-				var position = (button.Collider as RectCollider).TopLeft + new Vector2(
-					LevelInfo.INVENTORY_BUTTON_WIDTH / 2 + 20, 
-					LevelInfo.INVENTORY_BUTTON_HEIGHT / 2 - 8);
-				var count = InventoryQuantities[button.Type];
-
-				string text = count == LevelInfo.INFINITE_ITEMS_IN_INVENTORY
-							  ? "Inf" : String.Format("x{0}", count);
-				DisplayManager.DrawString(ItemQuantityFont, text, position, Color.White);
 			}
         }
     }

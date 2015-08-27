@@ -51,6 +51,8 @@ namespace Refraction_V2.Multiforms.Level
     public class BoardForm : Form
     {
 
+        private static readonly int TILE_SIDE_LENGTH = Assets.Level.Images.EmptyTile.Width;
+
         /// <summary>
         /// The name of the level currently loaded.
         /// </summary>
@@ -89,36 +91,100 @@ namespace Refraction_V2.Multiforms.Level
             : base(true)
         {
             LevelInfo = levelInfo;
-
-            var dim = levelInfo.BoardDimensions;
-            Dimensions = dim;
+            Dimensions = levelInfo.BoardDimensions;
 
             // Find the x and y offsets of the topleft corner of the board.
-            var y = (DisplayManager.WindowHeight - LevelInfo.TILE_SIDE_LENGTH * Dimensions.Y) / 2f;
-            var x = (DisplayManager.WindowWidth
-                - (LevelInfo.TILE_SIDE_LENGTH * dim.X
-                   + 2 * LevelInfo.INVENTORY_BUTTON_WIDTH
-                   + LevelInfo.BOARD_INVENTORY_GAP
-                   )
-               ) / 2f;
+            var boardY = GetBoardY(Dimensions);
+            var boardX = GetBoardX(Dimensions);
 
-            BoardCollider = new RectCollider(x, y, LevelInfo.TILE_SIDE_LENGTH * dim.X, LevelInfo.TILE_SIDE_LENGTH * dim.Y);
-            Board = new LevelTile[dim.Y, dim.X];
+            BoardCollider = new RectCollider(
+                boardX, boardY, 
+                TILE_SIDE_LENGTH * Dimensions.X, 
+                TILE_SIDE_LENGTH * Dimensions.Y
+                );
+            Board = new LevelTile[Dimensions.Y, Dimensions.X];
 
             // Create all the LevelTiles.
             int i = 0;
             foreach (var tileInfo in levelInfo.Board)
             {
-                Board[(i / dim.X), (i % dim.X)] = tileInfo.ToLevelTile(
-                    new Vector2(
-                        x + (i % dim.X) * LevelInfo.TILE_SIDE_LENGTH,
-                        y + (dim.Y - i / dim.X - 1) * LevelInfo.TILE_SIDE_LENGTH
-                        )
-                    );
+                AddTile(boardX, boardY, i, Dimensions, tileInfo);
                 i++;
             }
 
             Lasers = new List<Laser>();
+        }
+
+        /// <summary>
+        /// Get the x coordinate of the top left corner of the board.
+        /// </summary>
+        /// <param name="dim"></param>
+        /// <returns></returns>
+        private float GetBoardX(Point dim)
+        {
+            var windowWidth = DisplayManager.WindowWidth;
+            var tileWidth = TILE_SIDE_LENGTH;
+            var invButtonWidth = Assets.Level.Images.InventoryButton.Width;
+            var gap = LevelInfo.BOARD_INVENTORY_GAP;
+
+            var X_times_2 = windowWidth - (tileWidth * dim.X + 2 * invButtonWidth + gap);
+            return X_times_2 / 2f;
+        }
+
+        /// <summary>
+        /// Get the y coordinate of the top left corner of the board.
+        /// </summary>
+        /// <param name="dim"></param>
+        /// <returns></returns>
+        private float GetBoardY(Point dim)
+        {
+            return (DisplayManager.WindowHeight - TILE_SIDE_LENGTH * dim.Y) / 2f;
+        }
+
+        /// <summary>
+        /// Add a tile to the board.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="index"></param>
+        /// <param name="dim"></param>
+        /// <param name="tileInfo"></param>
+        private void AddTile(float x, float y, int index, Point dim, TileInfo tileInfo)
+        {
+            var xIndex = index % dim.X;
+            var yIndex = index / dim.X;
+
+            var tile = tileInfo.ToLevelTile(GetTilePosition(x, y, xIndex, yIndex, dim));
+            Board[yIndex, xIndex] = tile;
+        }
+
+        /// <summary>
+        /// Get the top left corner of a tile.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="index"></param>
+        /// <param name="dim"></param>
+        /// <returns></returns>
+        private Vector2 GetTilePosition(float x, float y, float xIndex, float yIndex, Point dim)
+        {
+            var vx = x + xIndex * TILE_SIDE_LENGTH;
+
+            // We do (dim.Y - yIndex - 1) instead of just yIndex so that the board gets flipped
+            // on the y-axis.
+            var vy = y + (dim.Y - yIndex - 1) * TILE_SIDE_LENGTH;
+            return new Vector2(vx, vy);
+        }
+
+        private Point GetTileCollidingWithMouse(Vector2 mpos)
+        {
+            var xIndex = (int)Math.Floor((mpos.X - BoardCollider.X) / TILE_SIDE_LENGTH);
+            var yIndex = (int)Math.Floor((mpos.Y - BoardCollider.Y) / TILE_SIDE_LENGTH);
+
+            // We again have to flip the yIndex vertically, since the window coordinate space
+            // (the coordinate space the mouse position corresponds to) is not the same as the
+            // board coordinate space.
+            return new Point(xIndex, Dimensions.Y - yIndex - 1);
         }
 
         public override void Update()
@@ -134,8 +200,9 @@ namespace Refraction_V2.Multiforms.Level
             var mpos = MouseInput.MouseVector;
 
             // Get the indices of the tile the mouse is colliding with.
-            int xIndex = (int)Math.Floor((mpos.X - BoardCollider.X) / LevelInfo.TILE_SIDE_LENGTH);
-            int yIndex = Dimensions.Y - (int)Math.Floor((mpos.Y - BoardCollider.Y) / LevelInfo.TILE_SIDE_LENGTH) - 1;
+            var index = GetTileCollidingWithMouse(mpos);
+            int xIndex = index.X;
+            var yIndex = index.Y;
 
             if (0 <= xIndex && xIndex < Dimensions.X &&
                 0 <= yIndex && yIndex < Dimensions.Y &&
@@ -153,20 +220,7 @@ namespace Refraction_V2.Multiforms.Level
                         Board[yIndex, xIndex].MousePressed[button] = true;
                     else if (Board[yIndex, xIndex].MousePressed[button] && MouseInput.IsReleased(button))
                     {
-                        switch (button)
-                        {
-                            case MouseButtons.Left:
-                                SetTile(xIndex, yIndex);
-                                break;
-                            case MouseButtons.Right:
-                                RemoveTile(xIndex, yIndex);
-                                break;
-                            case MouseButtons.Middle:
-                                ChooseTile(xIndex, yIndex);
-                                break;
-                            default:
-                                break;
-                        }
+                        PerformBoardAction(button, xIndex, yIndex);
                     }
                 }
             }
@@ -178,9 +232,11 @@ namespace Refraction_V2.Multiforms.Level
             for (int i = 0; i < Board.Length; i++)
             {
                 ix = i % Dimensions.X;
-                iy = i / Dimensions.Y;
+                iy = i / Dimensions.X;
+
                 if (ix == xIndex && iy == yIndex)
                     continue;
+
                 Board[iy, ix].CollidingWithMouse = false;
                 foreach (var button in Enum.GetValues(typeof(MouseButtons)).Cast<MouseButtons>())
                     Board[iy, ix].MousePressed[button] = false;
@@ -191,6 +247,24 @@ namespace Refraction_V2.Multiforms.Level
 
             foreach (var laser in Lasers)
                 laser.Update();
+        }
+
+        private void PerformBoardAction(MouseButtons button, int xIndex, int yIndex)
+        {
+            switch (button)
+            {
+                case MouseButtons.Left:
+                    SetTile(xIndex, yIndex);
+                    break;
+                case MouseButtons.Right:
+                    RemoveTile(xIndex, yIndex);
+                    break;
+                case MouseButtons.Middle:
+                    ChooseTile(xIndex, yIndex);
+                    break;
+                default:
+                    break;
+            }
         }
 
         /// <summary>
@@ -211,15 +285,18 @@ namespace Refraction_V2.Multiforms.Level
 			if (prevTile is RefractorTile)
 			{
 				var refractor = ((RefractorTile)prevTile).Type;
-				if (inventory.InventoryQuantities[refractor] != LevelInfo.INFINITE_ITEMS_IN_INVENTORY)
-					inventory.InventoryQuantities[refractor]++;
+                inventory.IncrementTileCount(refractor);
 			}
 
+            // We have to reset the alpha value of the tile's hover sprite since otherwise
+            // the tile's alpha value would reset and it would look weird.
+            var prevAlpha = prevTile.HoverSpriteAlpha;
             var currentlySelected = inventory.CurrentlySelectedTile.Value;
             Board[yIndex, xIndex] = new TileInfo(
                 currentlySelected, 
                 true)
                 .ToLevelTile(Board[yIndex, xIndex].Position);
+            Board[yIndex, xIndex].HoverSpriteAlpha = prevAlpha;
 
             inventory.DecrementCurrentTileCount();
 
@@ -242,10 +319,11 @@ namespace Refraction_V2.Multiforms.Level
             var tileType = refractorTile.Type;
             var inventory = Parent.GetForm<InventoryForm>(LevelMultiform.InventoryFormName);
 
-            if (inventory.InventoryQuantities[tileType] != LevelInfo.INFINITE_ITEMS_IN_INVENTORY)
-                inventory.InventoryQuantities[tileType]++;
+            inventory.IncrementTileCount(tileType);
 
+            var prevAlpha = refractorTile.HoverSpriteAlpha;
             Board[yIndex, xIndex] = new Empty(Board[yIndex, xIndex].Position, true);
+            Board[yIndex, xIndex].HoverSpriteAlpha = prevAlpha;
 
             BoardChanged = true;
         }
@@ -301,14 +379,9 @@ namespace Refraction_V2.Multiforms.Level
 
             foreach (var tile in Board)
                 tile.Render();
-            
-            DisplayManager.SetSpriteBatchProperties(
-                sortMode: SpriteSortMode.Texture, blendState: BlendState.Additive);
 
             foreach (var laser in Lasers)
                 laser.Render();
-
-            DisplayManager.ClearSpriteBatchProperties();
         }
 
     }

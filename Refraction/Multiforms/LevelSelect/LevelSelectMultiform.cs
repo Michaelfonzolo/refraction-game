@@ -94,7 +94,7 @@ namespace Refraction_V2.Multiforms.LevelSelect
         /// The GUIButtonInfo for the back button.
         /// </summary>
         public static readonly GUIButtonInfo BackButtonInfo = new GUIButtonInfo(
-            "Back", Assets.LevelSelect.Images.BackButton, Assets.Shared.Fonts.GUIButtonFont_Small);
+            "BACK", Assets.LevelSelect.Images.BackButton, Assets.Shared.Fonts.GUIButtonFont_Small);
 
         /// <summary>
         /// The bottom left of the back button.

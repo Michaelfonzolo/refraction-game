@@ -110,7 +110,7 @@ namespace DemeterEngine.Multiforms
         /// <param name="effector"></param>
         public void AddEffector(Effector effector)
         {
-            if (effector.form == null)
+            if (effector.Form == null)
                 effector.AttachTo(this);
             anonymousEffectors.Add(effector);
         }
@@ -122,7 +122,7 @@ namespace DemeterEngine.Multiforms
         /// <param name="effector"></param>
         public void AddEffector(string name, Effector effector)
         {
-            if (effector.form == null)
+            if (effector.Form == null)
                 effector.AttachTo(this);
             namedEffectors[name] = effector;
         }
@@ -207,13 +207,13 @@ namespace DemeterEngine.Multiforms
         {
             foreach (var effector in anonymousEffectors)
                 effector.Update();
-            anonymousEffectors.RemoveAll(e => e.dead);
+            anonymousEffectors.RemoveAll(e => e.Dead);
 
             var dead = new List<string>();
             foreach (var effector in namedEffectors)
             {
                 effector.Value.Update();
-                if (effector.Value.dead)
+                if (effector.Value.Dead)
                     dead.Add(effector.Key);
             }
 

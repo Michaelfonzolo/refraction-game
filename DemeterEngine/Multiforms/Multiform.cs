@@ -219,8 +219,10 @@ namespace DemeterEngine.Multiforms
 			foreach (var form in anonymousForms)
 				form.Update();
 			foreach (var form in namedForms)
-				if (!names.Contains(form.Key))
-					form.Value.Update();
+            {
+                if (!names.Contains(form.Key))
+                    form.Value.Update();
+            }
 		}
 
         /// <summary>
@@ -240,6 +242,17 @@ namespace DemeterEngine.Multiforms
         {
             foreach (var name in names)
                 namedForms[name].Render();
+        }
+
+        protected void RenderFormsExcept(params string[] names)
+        {
+            foreach (var form in anonymousForms)
+                form.Render();
+            foreach (var form in namedForms)
+            {
+                if (!names.Contains(form.Key))
+                    form.Value.Render();
+            }
         }
 
         /// <summary>

@@ -68,9 +68,29 @@ namespace DemeterEngine.Maths
         public static Vector2 Up = new Vector2(0, 1);
 
         /// <summary>
-        /// The unit vector point down (<0, -1>).
+        /// The unit vector pointing down (<0, -1>).
         /// </summary>
         public static Vector2 Down = new Vector2(0, -1);
+
+        /// <summary>
+        /// The unit vector pointing up-right (direction <1, 1>).
+        /// </summary>
+        public static Vector2 UpRight = ToNormalized(new Vector2(1, 1));
+
+        /// <summary>
+        /// The unit vector pointing up-left (direction <-1, 1>).
+        /// </summary>
+        public static Vector2 UpLeft = ToNormalized(new Vector2(-1, 1));
+
+        /// <summary>
+        /// The unit vector pointing down-right (direction <1, -1>).
+        /// </summary>
+        public static Vector2 DownRight = ToNormalized(new Vector2(1, -1));
+
+        /// <summary>
+        /// The unit vector pointing down-left (direction <-1, -1>).
+        /// </summary>
+        public static Vector2 DownLeft = ToNormalized(new Vector2(-1, -1));
 
         /// <summary>
         /// The up direction relative to the game world. Since the game coordinate space is
@@ -83,6 +103,14 @@ namespace DemeterEngine.Maths
         /// flipped on it's y-axis, this corresponds to the vector <0, 1>.
         /// </summary>
         public static Vector2 GameWorldDown = Up;
+
+        public static Vector2 GameWorldUpRight = DownRight;
+
+        public static Vector2 GameWorldUpLeft = DownLeft;
+
+        public static Vector2 GameWorldDownRight = UpRight;
+
+        public static Vector2 GameWorldDownLeft = UpLeft;
 
         public static Vector2 Ones = new Vector2(1, 1);
 

@@ -71,24 +71,6 @@ namespace Refraction_V2.Multiforms.Level
         private bool Killed;
 
 		/// <summary>
-		/// This struct represents a single linear segment of a laser (usually between two refractors or
-		/// two solid tiles). It represents the line segment and the colour of the laser throughout this
-		/// segment. The segments are then rendered individually.
-		/// </summary>
-        private struct LaserSegment
-        {
-            public Vector2 Start { get; private set; }
-            public Vector2 End { get; private set; }
-            public Color Color { get; private set; }
-            public LaserSegment(Vector2 start, Vector2 end, Color color) : this()
-            {
-                Start = start;
-                End = end;
-                Color = color;
-            }
-        }
-
-		/// <summary>
 		/// The start position of the current laser segment.
 		/// </summary>
         private Vector2 CurrentSegmentStart;
@@ -203,44 +185,10 @@ namespace Refraction_V2.Multiforms.Level
 
         public override void Render()
         {
-            foreach (var segment in Segments)
-                RenderSegment(segment);
-        }
-
-		/// <summary>
-		/// Render a single segment of the laser.
-		/// </summary>
-		/// <param name="segment"></param>
-        private void RenderSegment(LaserSegment segment)
-        {
-			// This code almost directly ripped from
-			// http://gamedevelopment.tutsplus.com/tutorials/how-to-generate-shockingly-good-2d-lightning-effects--gamedev-2681
-
-            var cap = Assets.Shared.Images.LaserCap;
-            var segmentTexture = Assets.Shared.Images.LaserSegment;
-
-            var tangent = segment.End - segment.Start;
-            var rotation = (float)Math.Atan2(tangent.Y, tangent.X);
-
             var scale = 0.2f * (float)SpecialFunctions.SineSquared(LocalFrame / 50f) + 0.5f;
-            var capOrigin = new Vector2(cap.Width, cap.Height / 2f);
-            var middleOrigin = new Vector2(0, segmentTexture.Height / 2f);
-            var middleScale = new Vector2(tangent.Length(), scale);
-
-            foreach (var color in new Color[] { segment.Color, Color.White })
+            foreach (var segment in Segments)
             {
-                DisplayManager.Draw(
-                    segmentTexture, segment.Start, null, color,
-                    rotation, middleOrigin, middleScale, SpriteEffects.None, 0f);
-
-                DisplayManager.Draw(
-                    cap, segment.Start, null, color,
-                    rotation, capOrigin, scale, SpriteEffects.None, 0f);
-
-                DisplayManager.Draw(
-                    cap, segment.End, null, color,
-                    rotation + (float)Math.PI, capOrigin, scale,
-                    SpriteEffects.None, 0f);
+                segment.Render(scale);
             }
         }
 

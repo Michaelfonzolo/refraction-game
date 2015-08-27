@@ -118,6 +118,20 @@ namespace DemeterEngine.Graphics
             }
         }
 
+        public Color TintRGB
+        {
+            get
+            {
+                return new Color((int)TintRed, (int)TintGreen, (int)TintBlue);   
+            }
+            set
+            {
+                TintRed = value.R;
+                TintGreen = value.G;
+                TintBlue = value.B;
+            }
+        }
+
         /// <summary>
         /// The position of the sprite.
         /// </summary>

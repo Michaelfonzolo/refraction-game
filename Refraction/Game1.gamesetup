@@ -12,5 +12,6 @@
   <Borderless>false</Borderless>
   <AllowBorderlessnessToggle>true</AllowBorderlessnessToggle>
 
+  <!-- Alternative background colour : 0x02091f -->
   <BackgroundFillColour>Black</BackgroundFillColour>
 </GameSetup>
