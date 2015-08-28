@@ -32,11 +32,15 @@ namespace Refraction_V2
 
                 public static readonly string AssetName_GUIButtonFont_Large = Path.Combine("Shared", "Fonts", "GUIButtonFont_Large");
 
+                public static readonly string AssetName_Error = Path.Combine("Shared", "Fonts", "Error");
+
                 public static readonly SpriteFont GUIButtonFont_Small = ArtManager.Font(AssetName_GUIButtonFont_Small);
 
                 public static readonly SpriteFont GUIButtonFont_Medium = ArtManager.Font(AssetName_GUIButtonFont_Medium);
 
                 public static readonly SpriteFont GUIButtonFont_Large = ArtManager.Font(AssetName_GUIButtonFont_Large);
+
+                public static readonly SpriteFont Error = ArtManager.Font(AssetName_Error);
             }
         }
 

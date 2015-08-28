@@ -69,6 +69,14 @@ namespace DemeterEngine.Graphics
 			}
 		}
 
+        public Vector2 Bounds
+        {
+            get
+            {
+                return new Vector2(Width, Height);
+            }
+        }
+
         /// <summary>
         /// The red value of the sprite's tint.
         /// </summary>

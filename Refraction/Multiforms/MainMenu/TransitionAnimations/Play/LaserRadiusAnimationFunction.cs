@@ -6,7 +6,7 @@ using System;
 
 namespace Refraction_V2.Multiforms.MainMenu.TransitionAnimations.Play
 {
-    public class LaserRadiusAnimation
+    public class LaserRadiusAnimationFunction
     {
 
         // Default shape parameters.
@@ -30,7 +30,7 @@ namespace Refraction_V2.Multiforms.MainMenu.TransitionAnimations.Play
         // Auxiliary constants
         private float M1, M2;
 
-        public LaserRadiusAnimation(
+        public LaserRadiusAnimationFunction(
             float y0 = DEFAULT_Y0, float y1 = DEFAULT_Y1, float x0 = DEFAULT_X0,
             float x1 = DEFAULT_X1, float x2 = DEFAULT_X2, float x3 = DEFAULT_X3, float x4 = DEFAULT_X4)
         {

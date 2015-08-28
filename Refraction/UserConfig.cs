@@ -32,7 +32,6 @@ namespace Refraction_V2
 
 		public static void Close()
 		{
-            Console.WriteLine("Yo!");
 			using (var writer = XmlWriter.Create(USER_INFO_FILE_NAME))
 			{
 				writer.WriteStartDocument();

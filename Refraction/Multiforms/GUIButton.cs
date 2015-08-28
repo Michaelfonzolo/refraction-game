@@ -116,6 +116,25 @@ namespace Refraction_V2.Multiforms
             TextColour = new Color(TextColour, alpha);
         }
 
+        public Vector2 GetPosition(PositionType positionType = PositionType.TopLeft)
+        {
+            var collider = (RectCollider)Collider;
+            return PositionConverter.ToType(collider.TopLeft, collider.W, collider.H, PositionType.TopLeft, positionType);
+        }
+
+        public void SetPosition(Vector2 vec, PositionType positionType)
+        {
+            var collider = (RectCollider)Collider;
+            var prevPosition = collider.TopLeft;
+            var topLeft = PositionConverter.ToType(
+                vec, collider.W, collider.H, positionType, PositionType.TopLeft);
+            collider.SetPosition(topLeft);
+
+            var delta = topLeft - prevPosition;
+            TextPosition += delta;
+            ButtonSprite.Position += delta;
+        }
+
         private void UpdateShift()
         {
             if ((CollidingWithMouse && MouseInput.IsClicked(MouseButtons.Left)) ||

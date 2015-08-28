@@ -23,6 +23,35 @@ namespace Refraction_V2.Utils
     public static class PositionConverter
     {
 
+        public static Vector2 ToType(
+            Vector2 position, double width, double height, PositionType fromType, PositionType toType)
+        {
+            var rect = ToRectangle(position, width, height, fromType);
+            switch (toType)
+            {
+                case PositionType.TopLeft:
+                    return rect.TopLeft;
+                case PositionType.TopRight:
+                    return rect.TopRight;
+                case PositionType.BottomLeft:
+                    return rect.BottomLeft;
+                case PositionType.BottomRight:
+                    return rect.BottomRight;
+                case PositionType.Center:
+                    return rect.Center;
+                case PositionType.TopCenter:
+                    return rect.TopCenter;
+                case PositionType.BottomCenter:
+                    return rect.BottomCenter;
+                case PositionType.LeftCenter:
+                    return rect.LeftCenter;
+                case PositionType.RightCenter:
+                    return rect.RightCenter;
+                default:
+                    throw new ArgumentException("Invalid PositionType supplied.");
+            }
+        }
+
         public static RectCollider ToRectangle(
             Vector2 position, double width, double height, PositionType positionType)
         {

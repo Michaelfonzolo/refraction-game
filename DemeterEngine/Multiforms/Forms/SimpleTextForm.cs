@@ -123,6 +123,11 @@ namespace DemeterEngine.Multiforms.Forms
 			Centred = false;
 		}
 
+        public void SetText(string text)
+        {
+            Text = text;
+        }
+
 		public override void Render()
 		{
 			var offset = Centred ? Font.MeasureString(Text) / 2f : Vector2.Zero;

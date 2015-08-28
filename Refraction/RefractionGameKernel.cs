@@ -33,8 +33,10 @@
 #region Using Statements
 
 using DemeterEngine;
+using Refraction_V2.Multiforms.ForegroundContent;
 using Refraction_V2.Multiforms.Level;
 using Refraction_V2.Multiforms.LevelComplete;
+using Refraction_V2.Multiforms.LevelLoad;
 using Refraction_V2.Multiforms.LevelSelect;
 using Refraction_V2.Multiforms.MainMenu;
 
@@ -58,6 +60,7 @@ namespace Refraction_V2
             
             MultiformManager.RegisterMultiform(MainMenuMultiform.MultiformName,      new MainMenuMultiform());
             MultiformManager.RegisterMultiform(LevelSelectMultiform.MultiformName,   new LevelSelectMultiform());
+            MultiformManager.RegisterMultiform(LevelLoadMultiform.MultiformName,     new LevelLoadMultiform());
             MultiformManager.RegisterMultiform(LevelMultiform.MultiformName,         new LevelMultiform());
             MultiformManager.RegisterMultiform(LevelCompleteMultiform.MultiformName, new LevelCompleteMultiform());
 

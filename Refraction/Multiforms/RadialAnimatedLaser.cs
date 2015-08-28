@@ -117,28 +117,12 @@ namespace Refraction_V2.Multiforms
             angleAnimatorIsAdditive = additive;
         }
 
-        private T UpdateAnimator<T>(Func<int, T> animator, bool additive, T val)
-        {
-            if (animator == null)
-                return val;
-            var newVal = animator(LocalFrame);
-            
-            if (additive)
-            {
-                return (dynamic)newVal + (dynamic)val;
-            }
-            else
-            {
-                return newVal;
-            }
-        }
-
         public override void Update()
         {
             base.Update();
 
             Radius = UpdateAnimator<float>(RadiusAnimator, radiusAnimatorIsAdditive, Radius);
-            Angle = UpdateAnimator<float>(AngleAnimator, angleAnimatorIsAdditive, Angle);
+            Angle  = UpdateAnimator<float>(AngleAnimator, angleAnimatorIsAdditive, Angle);
         }
     }
 }

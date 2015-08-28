@@ -5,14 +5,17 @@ using DemeterEngine.Multiforms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Refraction_V2.Multiforms.Effectors;
+using Refraction_V2.Multiforms.ForegroundContent;
 using Refraction_V2.Multiforms.LevelSelect;
+using Refraction_V2.Multiforms.MainMenu.TransitionAnimations.Credits;
+using Refraction_V2.Multiforms.MainMenu.TransitionAnimations.Options;
 using Refraction_V2.Multiforms.MainMenu.TransitionAnimations.Play;
 using System;
 using System.Collections.Generic;
 
 namespace Refraction_V2.Multiforms.MainMenu
 {
-    public class MainMenuMultiform : Multiform
+    public class MainMenuMultiform : RefractionGameMultiform
     {
 
         private static readonly Random Random = new Random();
@@ -38,6 +41,12 @@ namespace Refraction_V2.Multiforms.MainMenu
         /// The name of the "Credits" button.
         /// </summary>
         public const string CreditsButtonFormName = "CreditsButton";
+
+        public const string OnPlayButtonClickAnimationFormName = "OnPlayButtonClick_Animation";
+
+        public const string OnOptionsButtonClickAnimationFormName = "OnOptionsButtonClick_Animation";
+
+        public const string OnCreditsButtonClickAnimationFormName = "OnCreditsButtonClick_Animation";
 
         #endregion
 
@@ -79,8 +88,17 @@ namespace Refraction_V2.Multiforms.MainMenu
             RegisterForm(OptionsButtonFormName, new GUIButton(OptionsButtonInfo, OptionsButtonCenter));
             RegisterForm(CreditsButtonFormName, new GUIButton(CreditsButtonInfo, CreditsButtonCenter));
 
-            SetUpdater(Update_Main);
-            SetRenderer(Render_Main);
+            RegisterForm(new ClickParticleSpawnerForm());
+
+            if (args != null && args.SenderName == LevelSelectMultiform.MultiformName)
+            {
+                FadeIn(20, Color.White, Update_Main, Render_Main);
+            }
+            else
+            {
+                SetUpdater(Update_Main);
+                SetRenderer(Render_Main);
+            }
         }
 
         public void Update_Main()
@@ -90,39 +108,55 @@ namespace Refraction_V2.Multiforms.MainMenu
 
             if (GetForm<GUIButton>(PlayButtonFormName).IsReleased(MouseButtons.Left))
             {
-                // Resetting the timer makes it easier to align time based events in the
-                // transition-out, since it's easier to let the initial time be zero than
-                // it is to be anything else.
-                ResetTime();
+                PrepareOnButtonClick(
+                    Update_OnPlayButtonClick, Render_OnPlayButtonClick,
+                    OnPlayButtonClickAnimationFormName, new PlayAnimationForm(PlayButtonCenter),
+                    1, 1, PlayButtonFormName, OptionsButtonFormName, CreditsButtonFormName);
+            }
 
-                // These updaters perform the transition out after clicking the play button.
-                SetUpdater(Update_OnPlayButtonClick);
-                SetRenderer(Render_OnPlayButtonClick);
+            else if (GetForm<GUIButton>(OptionsButtonFormName).IsReleased(MouseButtons.Left))
+            {
+                PrepareOnButtonClick(
+                    Update_OnOptionsButtonClick, Render_OnOptionsButtonClick,
+                    OnOptionsButtonClickAnimationFormName, new OptionsAnimationForm(PlayButtonCenter),
+                    20, 2.2f, OptionsButtonFormName, PlayButtonFormName, CreditsButtonFormName);
+            }
 
-                RegisterForm("OnPlayButtonClick_Animation", new PlayAnimationForm(PlayButtonCenter));
-                GetForm<GUIButton>(PlayButtonFormName).LockInteraction();
-                return;
+            else if (GetForm<GUIButton>(CreditsButtonFormName).IsReleased(MouseButtons.Left))
+            {
+                PrepareOnButtonClick(
+                    Update_OnCreditsButtonClick, Render_OnCreditsButtonClick,
+                    OnCreditsButtonClickAnimationFormName, new CreditsAnimationForm(PlayButtonCenter),
+                    25, 1.8f, CreditsButtonFormName, PlayButtonFormName, OptionsButtonFormName);
             }
         }
 
-        private List<AnimatedLaserSegment> TransitionOutLasers = new List<AnimatedLaserSegment>();
-
-        public void Update_OnPlayButtonClick()
+        private void PrepareOnButtonClick(
+            Action updater, Action renderer, string animationName, Form animation, 
+            int floatDuration, float floatTension, string mainButton, params string[] otherButtons)
         {
-            UpdateForms();
-            UpdateTime();
+            // Resetting the timer makes it easier to align time based events in the
+            // transition-out, since it's easier to let the initial time be zero than
+            // it is to be anything else.
+            ResetTime();
 
-            if (AtFrame(1)) 
-            {
-                GetForm(OptionsButtonFormName).AddEffector(new FadeOutEffector(15));
-                GetForm(CreditsButtonFormName).AddEffector(new FadeOutEffector(15));
-            }
+            SetUpdater(updater);
+            SetRenderer(renderer);
 
-            if (AtFrame(230))
+            RegisterForm(animationName, animation);
+            GetForm(mainButton).AddEffector(
+                new FloatToPositionEffector(
+                    DisplayManager.WindowResolution.Center, 
+                    floatDuration, 
+                    floatTension
+                    )
+                );
+
+            GetForm<GUIButton>(mainButton).LockInteraction();
+
+            foreach (var name in otherButtons)
             {
-                Manager.Close(this);
-                Manager.Construct(LevelSelectMultiform.MultiformName);
-                ClearForms();
+                GetForm(name).AddEffector(new FadeOutEffector(15));
             }
         }
 
@@ -131,12 +165,84 @@ namespace Refraction_V2.Multiforms.MainMenu
             RenderForms();
         }
 
+        #region Animation Related Methods and Properties
+
+        #region Animation Related Constants
+
+        /// <summary>
+        /// The number of frames of the play button animation until the multiform exits.
+        /// </summary>
+        private const int PlayButtonAnimation_ExitFrame = 230;
+
+        /// <summary>
+        /// The number of frames of the options button animation until the multiform exits.
+        /// </summary>
+        private const int OptionsButtonAnimation_ExitFrame = 3300;
+
+        /// <summary>
+        /// The number of frames of the credits button animation until the multiform exits.
+        /// </summary>
+        private const int CreditsButtonAnimation_ExitFrame = 330;
+
+        #endregion
+
+        public void Update_OnPlayButtonClick()
+        {
+            UpdateForms();
+            UpdateTime();
+
+            if (AtFrame(PlayButtonAnimation_ExitFrame) || MouseInput.IsReleased(MouseButtons.Left))
+            {
+                ExitTo(LevelSelectMultiform.MultiformName);
+            }
+        }
+
+        public void Update_OnOptionsButtonClick()
+        {
+            UpdateForms();
+            UpdateTime();
+
+            if (AtFrame(OptionsButtonAnimation_ExitFrame) || MouseInput.IsReleased(MouseButtons.Left))
+            {
+                ExitTo(LevelSelectMultiform.MultiformName);
+                // ExitTo(OptionsMenu.MultiformName);
+            }
+        }
+
+        public void Update_OnCreditsButtonClick()
+        {
+            UpdateForms();
+            UpdateTime();
+
+            if (AtFrame(CreditsButtonAnimation_ExitFrame) || MouseInput.IsReleased(MouseButtons.Left))
+            {
+                ExitTo(LevelSelectMultiform.MultiformName);
+                // ExitTo(CreditsMenu.MultiformName);
+            }
+        }
+
         public void Render_OnPlayButtonClick()
         {
-            RenderFormsExcept("OnPlayButtonClick_Animation");
+            RenderFormsExcept(OnPlayButtonClickAnimationFormName);
 
-            RenderForm("OnPlayButtonClick_Animation");
+            RenderForm(OnPlayButtonClickAnimationFormName);
         }
+
+        public void Render_OnOptionsButtonClick()
+        {
+            RenderFormsExcept(OnOptionsButtonClickAnimationFormName);
+
+            RenderForm(OnOptionsButtonClickAnimationFormName);
+        }
+
+        public void Render_OnCreditsButtonClick()
+        {
+            RenderFormsExcept(OnCreditsButtonClickAnimationFormName);
+
+            RenderForm(OnCreditsButtonClickAnimationFormName);
+        }
+
+        #endregion
 
     }
 }

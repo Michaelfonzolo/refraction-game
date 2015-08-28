@@ -141,7 +141,7 @@ namespace DemeterEngine.Multiforms
                 List<string> current)
             {
                 current.Remove(name);
-                current.Add(name);
+                current.Insert(current.Count - 1, name);
             }
         }
 
@@ -154,6 +154,11 @@ namespace DemeterEngine.Multiforms
 
         // The list of multiforms to construct in the next call to Update.
         private List<PostUpdateEvent> postUpdateEvents = new List<PostUpdateEvent>();
+
+        private bool iteratingPostUpdateEvents = false;
+
+        // Yeah, we need this...
+        private List<PostUpdateEvent> postPostUpdateEvents = new List<PostUpdateEvent>();
 
         public MultiformManager() { }
 
@@ -238,7 +243,12 @@ namespace DemeterEngine.Multiforms
                         );
             if (data != null)
                 data.Sender = registeredMultiforms[data.SenderName];
-            postUpdateEvents.Add(new ConstructEvent(name, data));
+
+            var evt = new ConstructEvent(name, data);
+            if (iteratingPostUpdateEvents)
+                postPostUpdateEvents.Add(evt);
+            else
+                postUpdateEvents.Add(evt);
         }
 
         /// <summary>
@@ -253,7 +263,11 @@ namespace DemeterEngine.Multiforms
                         "There is no currently active multiform with the name \"{0}\"." +
                         "\nCannot close an inactive multiform.", name)
                         );
-            postUpdateEvents.Add(new CloseEvent(name));
+            var evt = new CloseEvent(name);
+            if (iteratingPostUpdateEvents)
+                postPostUpdateEvents.Add(evt);
+            else
+                postUpdateEvents.Add(evt);
         }
 
 		public void Close(Multiform multiform)
@@ -284,7 +298,11 @@ namespace DemeterEngine.Multiforms
         {
             if (!currentlyActive.Contains(name))
                 throw _UpdateOrderException(name);
-            postUpdateEvents.Add(new BringToFrontEvent(name));
+            var evt = new BringToFrontEvent(name);
+            if (iteratingPostUpdateEvents)
+                postPostUpdateEvents.Add(evt);
+            else
+                postUpdateEvents.Add(evt);
         }
 
         /// <summary>
@@ -295,7 +313,11 @@ namespace DemeterEngine.Multiforms
         {
             if (!currentlyActive.Contains(name))
                 throw _UpdateOrderException(name);
-            postUpdateEvents.Add(new SendToBackEvent(name));
+            var evt = new SendToBackEvent(name);
+            if (iteratingPostUpdateEvents)
+                postPostUpdateEvents.Add(evt);
+            else
+                postUpdateEvents.Add(evt);
         }
 
         /// <summary>
@@ -314,9 +336,17 @@ namespace DemeterEngine.Multiforms
                  m.Updater();
             }
 
+            iteratingPostUpdateEvents = true;
             foreach (var evt in postUpdateEvents)
+            {
                 evt.Perform(registeredMultiforms, currentlyActive);
+            }
+            iteratingPostUpdateEvents = false;
             postUpdateEvents.Clear();
+
+            foreach (var evt in postPostUpdateEvents)
+                postUpdateEvents.Add(evt);
+            postPostUpdateEvents.Clear();
         }
 
         /// <summary>
@@ -339,6 +369,5 @@ namespace DemeterEngine.Multiforms
                 m.Renderer();
             }
         }
-
     }
 }

@@ -151,8 +151,7 @@ namespace DemeterEngine
         public bool AtFrameIntervals(int interval, int start = 0, int? end = null)
         {
             var modded = (LocalFrame - start) % interval;
-            return (end.HasValue ? DuringFrame(start, end.Value) : AfterFrame(start)) &&
-                   0 <= modded && modded <= interval;
+            return (end.HasValue ? DuringFrame(start, end.Value) : AfterFrame(start)) && modded == 0;
         }
 
         public bool AtTimeIntervals(double interval, double start = 0, double end = Double.PositiveInfinity)

@@ -38,14 +38,16 @@ using DemeterEngine.Input;
 using DemeterEngine.Multiforms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Refraction_V2.Multiforms.ForegroundContent;
 using Refraction_V2.Multiforms.Level;
+using Refraction_V2.Multiforms.LevelLoad;
 using Refraction_V2.Utils;
 
 #endregion
 
 namespace Refraction_V2.Multiforms.LevelSelect
 {
-	public class LevelSelectMultiform : Multiform
+	public class LevelSelectMultiform : RefractionGameMultiform
     {
 
         #region Form Info
@@ -130,12 +132,15 @@ namespace Refraction_V2.Multiforms.LevelSelect
 
 			HasScrollBar = false;
 
+            int BUTTON_WIDTH  = Assets.LevelSelect.Images.ClearedLevelButton.Width;
+            int BUTTON_HEIGHT = Assets.LevelSelect.Images.ClearedLevelButton.Height;
+
 			int xOffset = INITIAL_LEVEL_SELECT_X_OFFSET;
 			int yOffset = INITIAL_LEVEL_SELECT_Y_OFFSET;
 
 			int rowNum          = LoadedLevelManager.SequentialLevels.Length / BUTTONS_PER_ROW,
-				totalWidth      = (LevelSelectButton.BUTTON_WIDTH + LEVEL_SELECT_BUTTON_GAP_X - 2) * BUTTONS_PER_ROW,
-				totalHeight     = rowNum * LevelSelectButton.BUTTON_HEIGHT + (rowNum - 1) * LEVEL_SELECT_BUTTON_GAP_Y + 200,
+				totalWidth      = (BUTTON_WIDTH + LEVEL_SELECT_BUTTON_GAP_X - 2) * BUTTONS_PER_ROW,
+				totalHeight     = rowNum * BUTTON_HEIGHT + (rowNum - 1) * LEVEL_SELECT_BUTTON_GAP_Y + 200,
 				scrollBarHeight = DisplayManager.WindowResolution.Height - 2 * INITIAL_LEVEL_SELECT_Y_OFFSET;
 
             LevelSelectScrollBar scrollBar = null;
@@ -160,10 +165,10 @@ namespace Refraction_V2.Multiforms.LevelSelect
                 yIndex = i / BUTTONS_PER_ROW;
                 button = new LevelSelectButton(
                     new RectCollider(
-                        xOffset + xIndex * (LevelSelectButton.BUTTON_WIDTH + LEVEL_SELECT_BUTTON_GAP_X), 
-                        yOffset + yIndex * (LevelSelectButton.BUTTON_HEIGHT + LEVEL_SELECT_BUTTON_GAP_Y),
-                        LevelSelectButton.BUTTON_WIDTH,
-                        LevelSelectButton.BUTTON_HEIGHT),
+                        xOffset + xIndex * (BUTTON_WIDTH + LEVEL_SELECT_BUTTON_GAP_X), 
+                        yOffset + yIndex * (BUTTON_HEIGHT + LEVEL_SELECT_BUTTON_GAP_Y),
+                        BUTTON_WIDTH,
+                        BUTTON_HEIGHT),
                     scrollBar,
                     i);
                 RegisterForm(button);
@@ -172,8 +177,9 @@ namespace Refraction_V2.Multiforms.LevelSelect
             RegisterForm(BackButtonFormName,
                 new GUIButton(BackButtonInfo, BackButtonBottomLeft, PositionType.BottomLeft));
 
-            SetUpdater(Update_Main);
-			SetRenderer(Render_Main);
+            RegisterForm(new ClickParticleSpawnerForm());
+
+            FadeIn(20, Color.White, Update_Main, Render_Main);
 		}
 
         internal void ButtonPressed(int number)
@@ -193,26 +199,21 @@ namespace Refraction_V2.Multiforms.LevelSelect
 
             if (buttonPressed)
             {
-                Manager.Close(this);
-
                 var data = new MultiformTransmissionData(MultiformName);
                 var LevelNameInfo = new LevelNameInfo(selectedLevelNumber);
                 data.SetAttr<LevelNameInfo>("LevelNameInfo", LevelNameInfo);
 
-                Manager.Construct(LevelMultiform.MultiformName, data);
-
-                ClearForms();
-
-                return;
+                FadeOutAndClose(
+                    20, Color.White, LevelLoadMultiform.MultiformName, 
+                    data, true, () => { UpdateForms(); }, Render_Main);
             }
 
-            if (GetForm<GUIButton>(BackButtonFormName).IsReleased(MouseButtons.Left))
+            else if (GetForm<GUIButton>(BackButtonFormName).IsReleased(MouseButtons.Left))
             {
-                Manager.Close(this);
-                Manager.Construct(MainMenu.MainMenuMultiform.MultiformName);
-                ClearForms();
-
-                return;
+                FadeOutAndClose(
+                    20, Color.White, MainMenu.MainMenuMultiform.MultiformName, 
+                    new MultiformTransmissionData(MultiformName), true, 
+                    () => { UpdateForms(); }, Render_Main);
             }
 		}
 

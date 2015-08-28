@@ -59,6 +59,7 @@
     <Compile Include="Effectors\Effector.cs" />
     <Compile Include="Effectors\EffectorException.cs" />
     <Compile Include="Extensions\ArrayExtensions.cs" />
+    <Compile Include="Extensions\VectorExtensions.cs" />
     <Compile Include="Extensions\XmlElementExtensions.cs" />
     <Compile Include="GlobalGameTimer.cs" />
     <Compile Include="Graphics\Sprite.cs" />

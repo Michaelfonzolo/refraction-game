@@ -48,7 +48,7 @@ using System;
 
 namespace Refraction_V2.Multiforms.Level
 {
-    public class LevelMultiform : Multiform
+    public class LevelMultiform : RefractionGameMultiform
     {
 
         #region Form Info
@@ -124,23 +124,15 @@ namespace Refraction_V2.Multiforms.Level
 
         public override void Construct(MultiformTransmissionData args)
         {
-            if (args == null)
-			{
-				LevelNameInfo = new LevelNameInfo(0);
-			}
-            else
-			{
-				LevelNameInfo = args.GetAttr<LevelNameInfo>("LevelNameInfo");
-			}
+            LevelNameInfo = args == null ? new LevelNameInfo(0) : args.GetAttr<LevelNameInfo>("LevelNameInfo");
+            var levelInfo = args.GetAttr<LevelInfo>("LevelInfo");
 
-            var levelInfo = new LevelInfo(LevelNameInfo.LevelName);
             RegisterForm(BoardFormName, new BoardForm(levelInfo));
             RegisterForm(InventoryFormName, new InventoryForm(levelInfo));
             RegisterForm(BackButtonFormName, new GUIButton(
                 BackButtonInfo, BackButtonBottomLeft, PositionType.BottomLeft));
 
-            SetUpdater(Update_Main);
-            SetRenderer(Render_Main);
+            FadeIn(20, Color.White, Update_Main, Render_Main);
         }
 
         public void Update_Main()

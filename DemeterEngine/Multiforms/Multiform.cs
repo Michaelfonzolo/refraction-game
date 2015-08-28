@@ -273,5 +273,18 @@ namespace DemeterEngine.Multiforms
         /// </summary>
         /// <param name="args"></param>
         public abstract void Construct(MultiformTransmissionData args);
+
+        /// <summary>
+        /// Exit to another multiform. This action closes the current multiform clears its forms,
+        /// and constructs the supplied multiform.
+        /// </summary>
+        /// <param name="multiformName"></param>
+        /// <param name="data"></param>
+        public void ExitTo(string multiformName, MultiformTransmissionData data = null)
+        {
+            Manager.Close(this);
+            Manager.Construct(multiformName, data);
+            ClearForms();
+        }
     }
 }

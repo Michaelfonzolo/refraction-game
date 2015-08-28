@@ -42,12 +42,16 @@
     <Compile Include="LoadedLevelManager.cs" />
     <Compile Include="Multiforms\AnimatedLaserSegment.cs" />
     <Compile Include="Multiforms\Effectors\FadeOutEffector.cs" />
+    <Compile Include="Multiforms\Effectors\FloatToPositionEffector.cs" />
+    <Compile Include="Multiforms\ForegroundContent\ClickParticle.cs" />
+    <Compile Include="Multiforms\ForegroundContent\ClickParticleSpawnerForm.cs" />
     <Compile Include="Multiforms\GUIButton.cs" />
     <Compile Include="Multiforms\GUIButtonInfo.cs" />
     <Compile Include="Multiforms\ITransitionalForm.cs" />
     <Compile Include="Multiforms\LaserSegment.cs" />
     <Compile Include="Multiforms\LevelComplete\LevelCompleteMultiform.cs" />
     <Compile Include="Multiforms\LevelComplete\LevelCompleteTextForm.cs" />
+    <Compile Include="Multiforms\LevelLoad\LevelLoadMultiform.cs" />
     <Compile Include="Multiforms\LevelSelect\LevelSelectScrollBar.cs" />
     <Compile Include="Multiforms\LevelSelect\LevelSelectButton.cs" />
     <Compile Include="Multiforms\LevelSelect\LevelSelectMultiform.cs" />
@@ -81,9 +85,12 @@
     <Compile Include="Multiforms\Level\TileType.cs" />
     <Compile Include="Multiforms\MainMenu\LogoForm.cs" />
     <Compile Include="Multiforms\MainMenu\MainMenuMultiform.cs" />
-    <Compile Include="Multiforms\MainMenu\TransitionAnimations\Play\LaserRadiusAnimation.cs" />
+    <Compile Include="Multiforms\MainMenu\TransitionAnimations\Credits\CreditsAnimationForm.cs" />
+    <Compile Include="Multiforms\MainMenu\TransitionAnimations\Options\OptionsAnimationForm.cs" />
+    <Compile Include="Multiforms\MainMenu\TransitionAnimations\Play\LaserRadiusAnimationFunction.cs" />
     <Compile Include="Multiforms\MainMenu\TransitionAnimations\Play\PlayAnimationForm.cs" />
     <Compile Include="Multiforms\RadialAnimatedLaser.cs" />
+    <Compile Include="Multiforms\RefractionGameMultiform.cs" />
     <Compile Include="OptionsManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -356,7 +363,10 @@
       <Name>DemeterEngine</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Multiforms\CreditsMenu\" />
+    <Folder Include="Multiforms\OptionsMenu\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

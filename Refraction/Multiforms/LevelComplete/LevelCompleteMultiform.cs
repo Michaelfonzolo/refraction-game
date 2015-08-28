@@ -39,6 +39,7 @@ using DemeterEngine.Multiforms;
 using DemeterEngine.Multiforms.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Refraction_V2.Multiforms.ForegroundContent;
 using Refraction_V2.Multiforms.Level;
 using Refraction_V2.Multiforms.LevelSelect;
 using Refraction_V2.Utils;
@@ -157,6 +158,8 @@ namespace Refraction_V2.Multiforms.LevelComplete
 
 			Construct_Text();
 			Construct_Buttons();
+
+            RegisterForm(new ClickParticleSpawnerForm());
 
 			SetUpdater(Update_Main);
 			SetRenderer(Render_Main);

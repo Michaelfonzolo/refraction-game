@@ -49,16 +49,6 @@ namespace Refraction_V2.Multiforms.LevelSelect
 	{
 
         /// <summary>
-        /// The width of the button sprite.
-        /// </summary>
-		public const int BUTTON_WIDTH = 50;
-
-        /// <summary>
-        /// The height of the button sprite.
-        /// </summary>
-		public const int BUTTON_HEIGHT = 50;
-
-        /// <summary>
         /// The sprite representing the button.
         /// </summary>
 		public Sprite ButtonSprite { get; private set; }
@@ -110,11 +100,13 @@ namespace Refraction_V2.Multiforms.LevelSelect
          *   < 0
          *
          */
-    
+
+
+        private static readonly int OFFSET = -Assets.LevelSelect.Images.ClearedLevelButton.Width;
 
         private static double GetAlpha(double yPos)
         {
-            if (yPos < -BUTTON_HEIGHT || yPos > 768 - 100)
+            if (yPos < OFFSET || yPos > 768 - 100)
                 return 0d;
             else if (yPos < 40)
                 return (yPos + 50) / 90d;
@@ -144,8 +136,8 @@ namespace Refraction_V2.Multiforms.LevelSelect
 			LevelNoFont  = Assets.LevelSelect.Fonts.LevelNo;
 
 			ButtonSprite.Position = collider.TopLeft;
-			var textDimensions = LevelNoFont.MeasureString(LevelNo.ToString());
-			TextPosition = (new Vector2(BUTTON_WIDTH, BUTTON_HEIGHT) - textDimensions) / 2f + collider.TopLeft;
+			var textDimensions = LevelNoFont.MeasureString((LevelNo + 1).ToString());
+			TextPosition = (ButtonSprite.Bounds - textDimensions) / 2f + collider.TopLeft;
 		}
 
         public override void Update()
@@ -169,7 +161,7 @@ namespace Refraction_V2.Multiforms.LevelSelect
             if (ScrollBar == null)
                 return;
 
-            var offset = -(float)ScrollBar.DeltaSpanScrollValue + 0.25f * (float)Math.Sin(LocalFrame / 20f);
+            var offset = -(float)ScrollBar.DeltaSpanScrollValue;
             ((RectCollider)Collider).Translate(0, offset);
             TextPosition += new Vector2(0, offset);
         }

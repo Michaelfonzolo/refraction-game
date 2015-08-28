@@ -17,11 +17,9 @@ namespace Refraction_V2.Multiforms.MainMenu.TransitionAnimations.Play
 
         #region Animation Constants
 
-        public static readonly Color LaserColor1 = Color.Blue;
+        public static readonly Color SecondaryLaserColour = Color.LightBlue;
 
-        public static readonly Color LaserColor2 = Color.LightBlue;
-
-        public const int RandomLaserSpawnInterval = 4;
+        public const int RandomLaserSpawnInterval = 1;
 
         public const int RandomLaserSpawnStart = 100;
 
@@ -41,19 +39,30 @@ namespace Refraction_V2.Multiforms.MainMenu.TransitionAnimations.Play
 
         private struct RadialLaserSpawnPoint
         {
-            public int   Time      { get; set; }
-            public int   Lasers    { get; set; }
-            public float AngleMul  { get; set; }
-            public float AngleDamp { get; set; }
+            public int   Time        { get; set; }
+            public int   Lasers      { get; set; }
+            public float AngleMul    { get; set; }
+            public float AngleDamp   { get; set; }
+            public float PulseRadius { get; set; }
+            public float Thickness   { get; set; }
+            public Color Colour      { get; set; }
         }
 
         private static readonly List<RadialLaserSpawnPoint> SpawnPoints
             = new List<RadialLaserSpawnPoint>()
         {
-            new RadialLaserSpawnPoint{ Time = 1,  Lasers = 4,  AngleMul = 0.5f,  AngleDamp = 100f },
-            new RadialLaserSpawnPoint{ Time = 20, Lasers = 6,  AngleMul = -1.2f, AngleDamp = 100f },
-            new RadialLaserSpawnPoint{ Time = 45, Lasers = 10, AngleMul = 1.5f,  AngleDamp = 50f },
-            new RadialLaserSpawnPoint{ Time = 75, Lasers = 25, AngleMul = 2f,    AngleDamp = 50f }
+            new RadialLaserSpawnPoint{ 
+                Time = 1, Lasers = 4, AngleMul = 0.5f, AngleDamp = 100f, 
+                PulseRadius = 250f, Thickness=1f, Colour = Color.Blue },
+            new RadialLaserSpawnPoint{ 
+                Time = 20, Lasers=6, AngleMul = -1.2f, AngleDamp = 100f, 
+                PulseRadius = 267f, Thickness=1f, Colour = Color.Green },
+            new RadialLaserSpawnPoint{ 
+                Time = 45, Lasers = 10, AngleMul = 1.5f, AngleDamp = 50f,  
+                PulseRadius = 284f, Thickness = 1f, Colour = Color.Red },
+            new RadialLaserSpawnPoint{ 
+                Time = 75, Lasers = 20, AngleMul = -2f, AngleDamp = 50f,  
+                PulseRadius = 300f, Thickness = 1f, Colour = Color.Magenta }
         };
 
         public Vector2 Center { get; private set; }
@@ -66,14 +75,16 @@ namespace Refraction_V2.Multiforms.MainMenu.TransitionAnimations.Play
             Center = center;
         }
 
-        private void AddLasers(int n, float angleMultiplier, float angleDampener)
+        private void AddLasers(
+            int n, float angleMultiplier, float angleDampener, 
+            float pulseRadius, float thickness, Color colour)
         {
             var angleIncrement = 360f / n;
             for (int i = 0; i < n; i++)
             {
-                var laser = new RadialAnimatedLaser(Center, angleIncrement * i, 1, LaserColor1);
+                var laser = new RadialAnimatedLaser(Center, angleIncrement * i, 1, colour, thickness);
 
-                laser.SetRadiusAnimator(new LaserRadiusAnimation().Func, false);
+                laser.SetRadiusAnimator(new LaserRadiusAnimationFunction(y1: pulseRadius).Func, false);
                 laser.SetAngleAnimator(m => angleMultiplier * (float)SpecialFunctions.J0(m / angleDampener));
 
                 Lasers.Add(laser);
@@ -83,7 +94,7 @@ namespace Refraction_V2.Multiforms.MainMenu.TransitionAnimations.Play
         private void AddRandomLaser()
         {
             var laser = new RadialAnimatedLaser(
-                Center, 360 * (float)Random.NextDouble(), 1, LaserColor2, SecondaryLaserScale);
+                Center, 360 * (float)Random.NextDouble(), 1, SecondaryLaserColour, SecondaryLaserScale);
             laser.SetRadiusAnimator(SecondaryLaserRadiusFunction, false);
             Lasers.Add(laser);
         }
@@ -96,7 +107,9 @@ namespace Refraction_V2.Multiforms.MainMenu.TransitionAnimations.Play
             {
                 if (AtFrame(spawnPoint.Time))
                 {
-                    AddLasers(spawnPoint.Lasers, spawnPoint.AngleMul, spawnPoint.AngleDamp);
+                    AddLasers(
+                        spawnPoint.Lasers, spawnPoint.AngleMul, spawnPoint.AngleDamp, 
+                        spawnPoint.PulseRadius, spawnPoint.Thickness, spawnPoint.Colour);
                 }
             }
 
