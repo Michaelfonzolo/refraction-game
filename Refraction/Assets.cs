@@ -30,9 +30,7 @@ namespace Refraction_V2
 
                 public static readonly string AssetName_GUIButtonFont_Medium = Path.Combine("Shared", "Fonts", "GUIButtonFont_Medium");
 
-                public static readonly string AssetName_GUIButtonFont_Large = Path.Combine("Shared", "Fonts", "GUIButtonFont_Large");
-
-                public static readonly string AssetName_Error = Path.Combine("Shared", "Fonts", "Error");
+                public static readonly string AssetName_GUIButtonFont_Large = Path.Combine("Shared", "Fonts", "GUIButtonFont_Large");                
 
                 public static readonly SpriteFont GUIButtonFont_Small = ArtManager.Font(AssetName_GUIButtonFont_Small);
 
@@ -40,7 +38,6 @@ namespace Refraction_V2
 
                 public static readonly SpriteFont GUIButtonFont_Large = ArtManager.Font(AssetName_GUIButtonFont_Large);
 
-                public static readonly SpriteFont Error = ArtManager.Font(AssetName_Error);
             }
         }
 
@@ -147,6 +144,25 @@ namespace Refraction_V2
                 public static readonly string AssetName_LevelCompleteText = Path.Combine("LevelComplete", "Fonts", "LevelCompleteText");
 
                 public static readonly SpriteFont LevelCompleteText = ArtManager.Font(AssetName_LevelCompleteText);
+            }
+        }
+
+        public static class LevelLoad
+        {
+            public static class Images
+            {
+
+            }
+
+            public static class Fonts
+            {
+                public static readonly string AssetName_Error = Path.Combine("LevelLoad", "Fonts", "Error");
+
+                public static readonly string AssetName_PlainMessage = Path.Combine("LevelLoad", "Fonts", "PlainMessage");
+
+                public static readonly SpriteFont Error = ArtManager.Font(AssetName_Error);
+
+                public static readonly SpriteFont PlainMessage = ArtManager.Font(AssetName_PlainMessage);
             }
         }
 

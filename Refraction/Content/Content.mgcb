@@ -330,9 +330,15 @@
 /processorParam:TextureFormat=Color
 /build:LevelSelect/Images/BackButton.png
 
-#begin Shared/Fonts/Error.spritefont
+#begin LevelLoad/Fonts/Error.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:TextureFormat=Compressed
-/build:Shared/Fonts/Error.spritefont
+/build:LevelLoad/Fonts/Error.spritefont
+
+#begin LevelLoad/Fonts/PlainMessage.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:LevelLoad/Fonts/PlainMessage.spritefont
 

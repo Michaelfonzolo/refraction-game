@@ -41,6 +41,7 @@
     <Compile Include="Assets.cs" />
     <Compile Include="LoadedLevelManager.cs" />
     <Compile Include="Multiforms\AnimatedLaserSegment.cs" />
+    <Compile Include="Multiforms\Effectors\FadeInEffector.cs" />
     <Compile Include="Multiforms\Effectors\FadeOutEffector.cs" />
     <Compile Include="Multiforms\Effectors\FloatToPositionEffector.cs" />
     <Compile Include="Multiforms\ForegroundContent\ClickParticle.cs" />
@@ -91,6 +92,7 @@
     <Compile Include="Multiforms\MainMenu\TransitionAnimations\Play\PlayAnimationForm.cs" />
     <Compile Include="Multiforms\RadialAnimatedLaser.cs" />
     <Compile Include="Multiforms\RefractionGameMultiform.cs" />
+    <Compile Include="Multiforms\TextForm.cs" />
     <Compile Include="OptionsManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -104,6 +106,7 @@
       <HintPath>$(MSBuildProgramFiles32)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>

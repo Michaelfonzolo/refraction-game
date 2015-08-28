@@ -46,9 +46,9 @@ namespace DemeterEngine.Multiforms.Forms
 
 		public string Text { get; protected set; }
 
-		public SpriteFont Font { get; private set; }
+		public SpriteFont Font { get; protected set; }
 
-		public Vector2 Position { get; private set; }
+		public Vector2 Position { get; protected set; }
 
 		public bool Centred { get; private set; }
 
@@ -106,7 +106,7 @@ namespace DemeterEngine.Multiforms.Forms
 			Font = font;
 			Position = position;
 			Centred = centred;
-			Tint = Color.White;
+			Tint = Color.Black;
 			Scale = 1;
 			Rotation = 0;
 		}
@@ -130,8 +130,12 @@ namespace DemeterEngine.Multiforms.Forms
 
 		public override void Render()
 		{
+            DisplayManager.SetSpriteBatchProperties(blendState: BlendState.NonPremultiplied);
+
 			var offset = Centred ? Font.MeasureString(Text) / 2f : Vector2.Zero;
 			DisplayManager.DrawString(Font, Text, Position, Tint, Rotation, offset, Scale, SpriteEffects.None, 0f);
+
+            DisplayManager.ClearSpriteBatchProperties();
 		}
 	}
 }

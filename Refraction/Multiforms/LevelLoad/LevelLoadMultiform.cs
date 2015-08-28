@@ -11,6 +11,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Refraction_V2.Multiforms.Level;
+using Refraction_V2.Multiforms.LevelSelect;
+using Refraction_V2.Multiforms.Effectors;
 
 namespace Refraction_V2.Multiforms.LevelLoad
 {
@@ -19,11 +21,9 @@ namespace Refraction_V2.Multiforms.LevelLoad
 
         public const string MultiformName = "LevelLoad";
 
-        public const int MESSAGE_LINE_GAP = 20;
+        public const int MESSAGE_LINE_GAP = 50;
 
-        public const int ERROR_WARNING_GAP = 50;
-
-        public const int MAIN_ERROR_MESSAGE_OFFSET_Y = 100;
+        public const int ERROR_WARNING_GAP = 100;
 
         public const string FATAL_ERROR_MESSAGE = "A fatal error occurred when loading the level:";
 
@@ -53,23 +53,27 @@ namespace Refraction_V2.Multiforms.LevelLoad
 
         public MultiformTransmissionData TransmissionData { get; private set; }
 
+        public List<TextForm> RegisteredTextForms = new List<TextForm>();
+
+        private int TimeOfMessagesCopied = -1;
+
         public override void Construct(MultiformTransmissionData args)
         {
+            TimeOfMessagesCopied = -1;
+            ResetTime();
             WarningMessages.Clear();
+            RegisteredTextForms.Clear();
+
             LevelNameInfo = args.GetAttr<LevelNameInfo>("LevelNameInfo");
+            LevelInfo = new LevelInfo(LevelNameInfo.LevelName);
 
-            try
+            Error = LevelInfo.Exception != null;
+            if (Error)
             {
-                LevelInfo = new LevelInfo(LevelNameInfo.LevelName);
-            }
-            catch (LevelLoadException ex)
-            {
-                ErrorMessage = ex.Message;
-                Error = true;
-                LevelInfo = null;
+                ErrorMessage = LevelInfo.Exception.Message;
             }
 
-            if (LevelInfo.WarningMessages.Count > 0)
+            if (LevelInfo != null && LevelInfo.WarningMessages.Count > 0)
             {
                 WarningMessages.AddRange(LevelInfo.WarningMessages);
             }
@@ -88,13 +92,15 @@ namespace Refraction_V2.Multiforms.LevelLoad
         {
             var levelName = LevelNameInfo.Sequential ? (LevelNameInfo.LevelNumber + 1).ToString()
                                                      : LevelNameInfo.LevelName;
-            var textFont = Assets.Level.Fonts.PauseText;
-            var errorFont = Assets.Shared.Fonts.Error;
+            var textFont = Assets.LevelLoad.Fonts.PlainMessage;
+            var errorFont = Assets.LevelLoad.Fonts.Error;
 
             var center = DisplayManager.WindowResolution.Center;
 
             var textHeight = GetTextHeight(textFont, errorFont);
-            var currentCenter = center - new Vector2(0, (DisplayManager.WindowHeight - textHeight) / 2f);
+            var currentCenter = new Vector2(
+                DisplayManager.WindowWidth / 2f, 
+                (DisplayManager.WindowHeight - textHeight) / 2f);
             if (Error)
             {
                 RegisterMessage(FATAL_ERROR_MESSAGE, textFont, MESSAGE_LINE_GAP, ref currentCenter);
@@ -103,28 +109,38 @@ namespace Refraction_V2.Multiforms.LevelLoad
                 if (WarningMessages.Count > 0)
                 {
                     RegisterMessage(ADDITIONAL_NON_FATAL_ERROR_MESSAGE, textFont, MESSAGE_LINE_GAP, ref currentCenter);
-                    foreach (var message in WarningMessages)
-                    {
-                        RegisterMessage(message, errorFont, MESSAGE_LINE_GAP, ref currentCenter);
-                    }
-                    // Add a little extra padding.
-                    currentCenter += new Vector2(0, ERROR_WARNING_GAP - MESSAGE_LINE_GAP);
+                    RegisterWarningMessages(errorFont, ref currentCenter);
                 }
             }
             else if (WarningMessages.Count > 0)
             {
                 RegisterMessage(NON_FATAL_ERROR_MESSAGE, textFont, MESSAGE_LINE_GAP, ref currentCenter);
-                foreach (var message in WarningMessages)
-                {
-                    RegisterMessage(message, errorFont, MESSAGE_LINE_GAP, ref currentCenter);
-                }
-                currentCenter += new Vector2(0, ERROR_WARNING_GAP - MESSAGE_LINE_GAP);
+                RegisterWarningMessages(errorFont, ref currentCenter);
             }
 
             if (Error || WarningMessages.Count > 0)
             {
                 RegisterMessage(
                     PRESS_TO_COPY_MESSAGE, textFont, 0, ref currentCenter, name: PressToCopyMessageFormName);
+            }
+        }
+
+        private void RegisterWarningMessages(SpriteFont errorFont, ref Vector2 currentCenter)
+        {
+            for (int i = 0; i < Math.Min(3, WarningMessages.Count); i++)
+            {
+                RegisterMessage(WarningMessages[i], errorFont, MESSAGE_LINE_GAP, ref currentCenter);
+            }
+
+            if (WarningMessages.Count > 3)
+            {
+                var msg = String.Format("({0} more...)", WarningMessages.Count - 3);
+                RegisterMessage(msg, errorFont, ERROR_WARNING_GAP, ref currentCenter);
+            }
+            else
+            {
+                // Add remaining padding.
+                currentCenter += new Vector2(0, ERROR_WARNING_GAP - MESSAGE_LINE_GAP);
             }
         }
 
@@ -177,7 +193,7 @@ namespace Refraction_V2.Multiforms.LevelLoad
 
         private void RegisterMessage(string message, SpriteFont font, int gap, ref Vector2 center, string name = null)
         {
-            var form = new SimpleTextForm(message, font, center, true);
+            var form = new TextForm(message, font, center, Color.TransparentBlack, true);
             if (name != null)
             {
                 RegisterForm(name, form);
@@ -186,20 +202,32 @@ namespace Refraction_V2.Multiforms.LevelLoad
             {
                 RegisterForm(form);
             }
+            RegisteredTextForms.Add(form);
+
             center += new Vector2(0, font.MeasureString(message).Y + gap);
+        }
+
+        // Ambiguous name, I know.
+        private void FadeTo(string multiformName)
+        {
+            FadeOutAndClose(
+                20, Color.White, multiformName, TransmissionData, 
+                true, () => { UpdateForms(); }, Render_Main);
         }
 
         public void Update_Main()
         {
+            UpdateTime();
             UpdateForms();
 
             if (WarningMessages.Count == 0 && !Error)
             {
-                ExitTo(LevelMultiform.MultiformName, TransmissionData);
+                FadeTo(LevelMultiform.MultiformName);
             }
             else
             {
-                if (KeyboardInput.IsPressed(C) && KeyboardInput.IsReleased(CTRL))
+                if ((KeyboardInput.IsPressed(C) && KeyboardInput.IsReleased(CTRL)) ||
+                    (KeyboardInput.IsReleased(C) && KeyboardInput.IsPressed(CTRL)))
                 {
                     var messages = new List<string>(WarningMessages);
                     if (Error)
@@ -207,19 +235,39 @@ namespace Refraction_V2.Multiforms.LevelLoad
                         messages.Insert(0, ErrorMessage);
                     }
                     Clipboard.SetText(String.Join("\n", messages));
-                    GetForm<SimpleTextForm>(PressToCopyMessageFormName).SetText(MESSAGES_COPIED_MESSAGE);
+
+                    GetForm(PressToCopyMessageFormName).AddEffector(new FadeOutEffector(15));
+                    TimeOfMessagesCopied = LocalFrame + 20;
                 }
                 if (MouseInput.IsReleased(DemeterEngine.Input.MouseButtons.Left))
                 {
                     if (Error)
                     {
-                        ExitTo(LevelSelect.LevelSelectMultiform.MultiformName);
+                        FadeTo(LevelSelectMultiform.MultiformName);
                     }
                     else
                     {
-                        ExitTo(LevelMultiform.MultiformName, TransmissionData);
+                        FadeTo(LevelMultiform.MultiformName);
                     }
                 }
+            }
+
+            for (int i = 0; i < RegisteredTextForms.Count; i++)
+            {
+                var textForm = RegisteredTextForms[i];
+                if (AtFrame((int)(textForm.Position.Y / 5f)))
+                {
+                    textForm.AddEffector(new FadeInEffector(15));
+                }
+            }
+
+            if (AtFrame(TimeOfMessagesCopied))
+            {
+                var pos = GetForm<TextForm>(PressToCopyMessageFormName).Position;
+                var newForm = new TextForm(
+                    MESSAGES_COPIED_MESSAGE, Assets.LevelLoad.Fonts.PlainMessage, pos, Color.TransparentBlack);
+                newForm.AddEffector(new FadeInEffector(15));
+                RegisterForm(newForm);
             }
         }
 
@@ -232,6 +280,8 @@ namespace Refraction_V2.Multiforms.LevelLoad
                 dummyTexture, Vector2.Zero, null, Color.White, 0f, Vector2.Zero,
                 new Vector2(DisplayManager.WindowWidth, DisplayManager.WindowHeight),
                 SpriteEffects.None, 0f);
+
+            RenderForms();
         }
 
     }

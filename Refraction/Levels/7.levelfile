@@ -7,16 +7,16 @@
 			<Outputter Direction="Up" Colour="Green"/>
 			<Outputter Direction="Up" Colour="Purple"/>
 		</Row>
-		<EmptyRow/>
-		<EmptyRow/>
-		<EmptyRow/>
+		<EmptyRow Open="flurb"/>
+		<EmptyRow Open="fleeb"/>
+		<EmptyRow Open="fleb"/>
 		<Row>
 			<Tile Type="RF_ULxUR_U"/>
 			<Tile Type="RF_ULxUR_U"/>
 			<Tile Type="RF_ULxUR_U"/>
 			<Tile Type="RF_ULxUR_U"/>
 		</Row>
-		<EmptyRow/>
+		<EmptyRow Open="smith"/>
 		<Row>
 			<Receiver Direction="Up" Colour="Purple"/>
 			<Receiver Direction="Up" Colour="Red"/>

@@ -157,21 +157,16 @@ namespace Refraction_V2.Multiforms.Level
                     var data = new MultiformTransmissionData(MultiformName);
                     data.SetAttr<LevelNameInfo>("LevelNameInfo", LevelNameInfo);
 
-                    Manager.Close(this);
-                    Manager.Construct(LevelCompleteMultiform.MultiformName, data);
-
-                    ClearForms();
-
-                    return;
+                    FadeOutAndClose(
+                        20, Color.White, LevelCompleteMultiform.MultiformName, 
+                        data, true, () => { UpdateForms(); }, Render_Main);
+                    
                 }
-
-                if (GetForm<GUIButton>(BackButtonFormName).IsReleased(MouseButtons.Left))
+                else if (GetForm<GUIButton>(BackButtonFormName).IsReleased(MouseButtons.Left))
                 {
-                    Manager.Close(this);
-                    Manager.Construct(LevelSelectMultiform.MultiformName);
-                    ClearForms();
-
-                    return;
+                    FadeOutAndClose(
+                        20, Color.White, LevelSelectMultiform.MultiformName,
+                        null, true, () => { UpdateForms(); }, Render_Main);
                 }
             }
         }

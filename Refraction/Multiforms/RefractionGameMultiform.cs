@@ -92,6 +92,8 @@ namespace Refraction_V2.Multiforms
                 {
                     ClearForms();
                 }
+
+                FadeAlpha = 0f;
             }
 
             FadeAlpha += 1f / FadeDuration;

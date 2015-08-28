@@ -6,12 +6,12 @@ using DemeterEngine.Effectors;
 
 namespace Refraction_V2.Multiforms.Effectors
 {
-    public class FadeOutEffector : Effector
+    public class FadeInEffector : Effector
     {
 
         public int Duration { get; private set; }
 
-        public FadeOutEffector(int frameDuration)
+        public FadeInEffector(int frameDuration)
             : base()
         {
             Duration = frameDuration;
@@ -19,7 +19,7 @@ namespace Refraction_V2.Multiforms.Effectors
 
         private float AlphaFunction(int frame)
         {
-            return 1 - frame / (float)Duration;
+            return frame / (float)Duration;
         }
 
         public override void Update()
@@ -31,7 +31,7 @@ namespace Refraction_V2.Multiforms.Effectors
 
             if (LocalFrame >= Duration)
             {
-                form.SetAlpha(0);
+                form.SetAlpha(255f);
                 Kill();
             }
         }

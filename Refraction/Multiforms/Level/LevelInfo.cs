@@ -121,13 +121,27 @@ namespace Refraction_V2.Multiforms.Level
         /// </summary>
         public HashSet<string> WarningMessages = new HashSet<string>();
 
+        public LevelLoadException Exception { get; private set; }
+
         public LevelInfo(string levelName, bool mock = false)
         {
             LevelName = levelName;
-            if (mock)
-                LoadMock();
-            else
-                LoadLevel();
+            try 
+            {
+                if (mock)
+                {
+                    LoadMock();
+                }
+                else
+                {
+                    LoadLevel();
+                }
+                Exception = null;
+            }
+            catch (LevelLoadException exception)
+            {
+                Exception = exception;
+            }
         }
 
 		/// <summary>
