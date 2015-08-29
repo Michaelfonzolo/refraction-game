@@ -93,7 +93,6 @@
     <Compile Include="Multiforms\Level\Tiles\RF_U_L_and_U_R_pass_UL.cs" />
     <Compile Include="Multiforms\Level\Tiles\RF_U_L_and_U_R_pass_UR.cs" />
     <Compile Include="Multiforms\Level\TileType.cs" />
-    <Compile Include="Multiforms\MainMenu\LogoForm.cs" />
     <Compile Include="Multiforms\MainMenu\MainMenuMultiform.cs" />
     <Compile Include="Multiforms\MainMenu\TransitionAnimations\Credits\CreditsAnimationForm.cs" />
     <Compile Include="Multiforms\MainMenu\TransitionAnimations\Options\OptionsAnimationForm.cs" />
@@ -107,6 +106,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RefractionGameKernel.cs" />
     <Compile Include="UserConfig.cs" />
+    <Compile Include="Utils\PositionConverter.cs" />
     <Compile Include="Utils\PositionType.cs" />
   </ItemGroup>
   <ItemGroup>

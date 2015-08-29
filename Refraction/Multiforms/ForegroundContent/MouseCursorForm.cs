@@ -154,7 +154,11 @@ namespace Refraction_V2.Multiforms.ForegroundContent
             {
                 FadeOut();
             }
-            else
+
+            // We have to make this extra check, since if it were just an unqualified else block
+            // it would always be active so long as the condition above is false, meaning any calls
+            // to FadeIn() or FadeOut() made externally would be essentially useless.
+            else if (!MouseInput.IsIdle(1))
             {
                 FadeIn();
             }
