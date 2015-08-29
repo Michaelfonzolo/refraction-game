@@ -33,5 +33,9 @@
 		<Tile Type="RF_URxDR_R" Count="Infinite"/>
 		<Tile Type="RF_ULxUR_U" Count="Infinite"/>
 		<Tile Type="RF_DLxDR_D" Count="Infinite"/>
+		<Tile Type="RF_U_L_and_U_R_pass_UL" Count="Infinite"/>
+		<Tile Type="RF_U_L_and_U_R_pass_UR" Count="Infinite"/>
+		<Tile Type="RF_UL_DL_and_UR_DR_pass_L" Count="Infinite"/>
+		<Tile Type="RF_UL_UR_and_DL_DR_pass_U" Count="Infinite"/>
 	</Inventory>
 </Level>

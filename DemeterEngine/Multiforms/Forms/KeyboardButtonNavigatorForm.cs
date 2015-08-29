@@ -73,17 +73,17 @@ namespace DemeterEngine.Multiforms.Forms
 		/// <summary>
 		/// The key to navigate to the left.
 		/// </summary>
-		public Keys NavigateLeft { get; private set; }
+        public List<Keys> NavigateLeft = new List<Keys>();
 
 		/// <summary>
 		/// The key to navigate to the right.
 		/// </summary>
-		public Keys NavigateRight { get; private set; }
+        public List<Keys> NavigateRight = new List<Keys>();
 
 		/// <summary>
 		/// The key to loose focus.
 		/// </summary>
-		public Keys LooseFocusKey { get; private set; }
+        public List<Keys> LooseFocusKey = new List<Keys>();
 
 		/// <summary>
 		/// Whether or not the navigator has focus.
@@ -91,29 +91,46 @@ namespace DemeterEngine.Multiforms.Forms
 		public bool HasFocus { get { return SelectedButtonIndex.HasValue; } }
 
 		public KeyboardButtonNavigatorForm(
-			string[] buttonNames, Keys navigLeft = Keys.Left, Keys navigRight = Keys.Right, 
+            IEnumerable<string> buttonNames, Keys navigLeft = Keys.Left, Keys navigRight = Keys.Right, 
 			Keys looseFocus = Keys.Escape, bool keepTime = true)
-			: base(keepTime)
-		{
-			this.buttonNames = buttonNames;
-			Initialize(navigLeft, navigRight, looseFocus);
-		}
+			: this(buttonNames,
+            new List<Keys>() { navigLeft },
+            new List<Keys>() { navigRight },
+            new List<Keys>() { looseFocus },
+            keepTime) { }
+
+        public KeyboardButtonNavigatorForm(
+            IEnumerable<string> buttonNames, IEnumerable<Keys> navigLeft, IEnumerable<Keys> navigRight,
+            IEnumerable<Keys> looseFocus, bool keepTime = true)
+            : base(keepTime)
+        {
+            this.buttonNames = buttonNames.ToArray();
+            Initialize(navigLeft, navigRight, looseFocus);
+        }
 
 		public KeyboardButtonNavigatorForm(
-			ButtonForm[] buttons, Keys navigLeft = Keys.Left, Keys navigRight = Keys.Right, 
+            IEnumerable<ButtonForm> buttons, Keys navigLeft = Keys.Left, Keys navigRight = Keys.Right, 
 			Keys looseFocus = Keys.Escape, bool keepTime = true)
-			: base(keepTime)
-		{
-			RegisteredButtons = buttons.ToList();
-			Initialize(navigLeft, navigRight, looseFocus);
-		}
+			: this(buttons,
+            new List<Keys>() { navigLeft },
+            new List<Keys>() { navigRight },
+            new List<Keys>() { looseFocus },
+            keepTime) { }
 
-		private void Initialize(
-			Keys navigLeft = Keys.Left, Keys navigRight = Keys.Right, Keys looseFocus = Keys.Escape)
+        public KeyboardButtonNavigatorForm(
+            IEnumerable<ButtonForm> buttons, IEnumerable<Keys> navigLeft, IEnumerable<Keys> navigRight,
+            IEnumerable<Keys> looseFocus, bool keepTime = true)
+            : base(keepTime)
+        {
+            RegisteredButtons = buttons.ToList();
+            Initialize(navigLeft, navigRight, looseFocus);
+        }
+
+		private void Initialize(IEnumerable<Keys> navigLeft, IEnumerable<Keys> navigRight, IEnumerable<Keys> looseFocus)
 		{
-			NavigateLeft = navigLeft;
-			NavigateRight = navigRight;
-			LooseFocusKey = looseFocus;
+			NavigateLeft = navigLeft.ToList();
+			NavigateRight = navigRight.ToList();
+			LooseFocusKey = looseFocus.ToList();
 		}
 
 		public override void PostConstruct()
@@ -145,11 +162,16 @@ namespace DemeterEngine.Multiforms.Forms
 			SelectedButtonIndex = null;
 		}
 
-		protected virtual bool ValidKeyPressedState(Keys key)
+		protected virtual bool ValidKeyPressedState(List<Keys> keys)
 		{
-			return KeyboardInput.IsClicked(key) ||
-				  (KeyboardInput.IsHeld(key, 600d) &&
-				  (KeyboardInput.FramesSinceKeyPressed[KeyboardInput.KeyToInt(key)] - 600d) % 4 == 0);
+            bool ok = false;
+            foreach (var key in keys)
+            {
+                ok |= KeyboardInput.IsClicked(key) ||
+				     (KeyboardInput.IsHeld(key, 600d) &&
+				     (KeyboardInput.FramesSinceKeyPressed[KeyboardInput.KeyToInt(key)] - 600d) % 4 == 0);
+            }
+            return ok;
 		}
 
 		public override void Update()
@@ -164,8 +186,13 @@ namespace DemeterEngine.Multiforms.Forms
 
 			if (SelectedButtonIndex.HasValue && !RegisteredButtons[SelectedButtonIndex.Value].Locked)
 			{
-				if (KeyboardInput.IsPressed(LooseFocusKey)
-					|| RegisteredButtons.Count(b => b.CollidingWithMouse) > 0)
+                bool looseFocus = false;
+                foreach (var key in LooseFocusKey)
+                {
+                    looseFocus |= KeyboardInput.IsPressed(key)
+                               || RegisteredButtons.Count(b => b.CollidingWithMouse) > 0;
+                }
+				if (looseFocus)
 					LooseFocus();
 				else
 					RegisteredButtons[SelectedButtonIndex.Value].CollidingWithMouse = true;

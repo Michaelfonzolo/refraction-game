@@ -33,6 +33,8 @@
 #region Using Statements
 
 using DemeterEngine;
+
+using Refraction_V2.Multiforms.Background;
 using Refraction_V2.Multiforms.ForegroundContent;
 using Refraction_V2.Multiforms.Level;
 using Refraction_V2.Multiforms.LevelComplete;
@@ -57,14 +59,20 @@ namespace Refraction_V2
 
         public override void LoadMultiforms()
         {
-            
-            MultiformManager.RegisterMultiform(MainMenuMultiform.MultiformName,      new MainMenuMultiform());
-            MultiformManager.RegisterMultiform(LevelSelectMultiform.MultiformName,   new LevelSelectMultiform());
-            MultiformManager.RegisterMultiform(LevelLoadMultiform.MultiformName,     new LevelLoadMultiform());
-            MultiformManager.RegisterMultiform(LevelMultiform.MultiformName,         new LevelMultiform());
+            MultiformManager.RegisterMultiform(ForegroundContentMultiform.MultiformName, new ForegroundContentMultiform());
+            MultiformManager.RegisterMultiform(BackgroundMultiform.MultiformName, new BackgroundMultiform());
+            MultiformManager.RegisterMultiform(MainMenuMultiform.MultiformName, new MainMenuMultiform());
+            MultiformManager.RegisterMultiform(LevelSelectMultiform.MultiformName, new LevelSelectMultiform());
+            MultiformManager.RegisterMultiform(LevelLoadMultiform.MultiformName, new LevelLoadMultiform());
+            MultiformManager.RegisterMultiform(LevelMultiform.MultiformName, new LevelMultiform());
             MultiformManager.RegisterMultiform(LevelCompleteMultiform.MultiformName, new LevelCompleteMultiform());
 
+            MultiformManager.Construct(BackgroundMultiform.MultiformName);
             MultiformManager.Construct(MainMenuMultiform.MultiformName);
+            MultiformManager.Construct(ForegroundContentMultiform.MultiformName);
+
+            MultiformManager.SetBackgroundOrder(BackgroundMultiform.MultiformName);
+            MultiformManager.SetForegroundOrder(ForegroundContentMultiform.MultiformName);
         }
 
     }

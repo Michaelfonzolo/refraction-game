@@ -39,6 +39,8 @@
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -530,6 +532,44 @@ namespace DemeterEngine.Input
         {
             return millisecondsSinceMouseMovement == 0 &&
                    prevMillisecondsSinceMouseMovement >= milliseconds;
+        }
+
+        /// <summary>
+        /// Check if the mouse has been idle for at least the given number of frames.
+        /// </summary>
+        /// <param name="frames"></param>
+        /// <returns></returns>
+        public static bool IsIdle(int frames)
+        {
+            return Instance._IsIdle(frames);
+        }
+        private bool _IsIdle(int frames)
+        {
+            bool idle = framesSinceMouseMovement >= frames;
+            foreach (var button in Enum.GetValues(typeof(MouseButtons)).Cast<MouseButtons>())
+            {
+                idle &= framesSinceMouseUnpressed[_ButtonToIndex(button)] >= frames;
+            }
+            return idle;
+        }
+
+        /// <summary>
+        /// Check if the mouse has been idle for at least the given number of milliseconds.
+        /// </summary>
+        /// <param name="milliseconds"></param>
+        /// <returns></returns>
+        public static bool IsIdle(double milliseconds)
+        {
+            return Instance._IsIdle(milliseconds);
+        }
+        private bool _IsIdle(double milliseconds)
+        {
+            bool idle = millisecondsSinceMouseMovement >= milliseconds;
+            foreach (var button in Enum.GetValues(typeof(MouseButtons)).Cast<MouseButtons>())
+            {
+                idle &= millisecondsSinceMouseUnpressed[_ButtonToIndex(button)] >= milliseconds;
+            }
+            return idle;
         }
     }
 }

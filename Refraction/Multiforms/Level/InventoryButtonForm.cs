@@ -41,8 +41,10 @@ using DemeterEngine;
 using DemeterEngine.Collision;
 using DemeterEngine.Graphics;
 using DemeterEngine.Multiforms.Forms;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+
 using System;
 
 #endregion
@@ -197,7 +199,7 @@ namespace Refraction_V2.Multiforms.Level
             : base(null, true)
         {
             Type = type;
-            Sprite = new Sprite(GetSpriteName(type));
+            Sprite = new Sprite(GetTileTexture(type));
             ButtonSprite = new Sprite(Assets.Level.Images.InventoryButton);
             HoverSprite  = new Sprite(Assets.Level.Images.InventoryButtonHover);
 
@@ -208,7 +210,7 @@ namespace Refraction_V2.Multiforms.Level
             QuantityTextPosition = ((RectCollider)Collider).Center + QUANTITY_TEXT_POS_OFFSET;
         }
 
-        private Texture2D GetSpriteName(TileType type)
+        private Texture2D GetTileTexture(TileType type)
         {
             switch (type)
             {
@@ -228,6 +230,14 @@ namespace Refraction_V2.Multiforms.Level
                     return Assets.Level.Images.Refractor_ULxDL_L;
                 case TileType.RF_URxDR_R:
                     return Assets.Level.Images.Refractor_URxDR_R;
+                case TileType.RF_U_L_and_U_R_pass_UL:
+                    return Assets.Level.Images.Refractor_U_L_and_U_R_pass_UL;
+                case TileType.RF_U_L_and_U_R_pass_UR:
+                    return Assets.Level.Images.Refractor_U_L_and_U_R_pass_UR;
+                case TileType.RF_UL_DL_and_UR_DR_pass_L:
+                    return Assets.Level.Images.Refractor_UL_DL_and_UR_DR_pass_L;
+                case TileType.RF_UL_UR_and_DL_DR_pass_U:
+                    return Assets.Level.Images.Refractor_UL_UR_and_DL_DR_pass_U;
                 default:
                     throw new ArgumentException("Invalid TileType.");
             }
@@ -237,12 +247,25 @@ namespace Refraction_V2.Multiforms.Level
         {
             base.Update();
 
+            UpdateHoverSpriteAlpha();
+
+            UpdateQuantityTextScale();
+        }
+
+        private void UpdateHoverSpriteAlpha()
+        {
             var increment = (CollidingWithMouse ? 1 : -1) * HOVER_ALPHA_INCREMENT;
             HoverSpriteAlpha = MathHelper.Clamp(
-                HoverSpriteAlpha + increment, 
-                HOVER_ALPHA_MIN, 
+                HoverSpriteAlpha + increment,
+                HOVER_ALPHA_MIN,
                 HOVER_ALPHA_MAX);
+        }
 
+        /// <summary>
+        /// Update the scale of the quantity text.
+        /// </summary>
+        private void UpdateQuantityTextScale()
+        {
             if (QuantityTextScaleTime > 0)
             {
                 QuantityTextScale = TextScaleFunction(QuantityTextScaleTime);
@@ -264,6 +287,9 @@ namespace Refraction_V2.Multiforms.Level
             }
         }
 
+        /// <summary>
+        /// Increment the quantity of this button's tile type.
+        /// </summary>
         public void IncrementQuantity()
         {
             if (Quantity != LevelInfo.INFINITE_ITEMS_IN_INVENTORY)
@@ -273,6 +299,9 @@ namespace Refraction_V2.Multiforms.Level
             }
         }
 
+        /// <summary>
+        /// Decrement the quantity of this button's tile type.
+        /// </summary>
         public void DecrementQuantity()
         {
             if (Quantity != LevelInfo.INFINITE_ITEMS_IN_INVENTORY)

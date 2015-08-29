@@ -106,7 +106,7 @@ namespace DemeterEngine.Multiforms.Forms
 			Font = font;
 			Position = position;
 			Centred = centred;
-			Tint = Color.Black;
+			Tint = Color.White;
 			Scale = 1;
 			Rotation = 0;
 		}

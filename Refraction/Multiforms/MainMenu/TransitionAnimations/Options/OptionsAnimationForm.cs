@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DemeterEngine;
-using DemeterEngine.Extensions;
-using DemeterEngine.Maths;
+﻿// !!! INCOMPLETE !!!
+
 using DemeterEngine.Multiforms;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+using System;
+using System.Collections.Generic;
 
 namespace Refraction_V2.Multiforms.MainMenu.TransitionAnimations.Options
 {

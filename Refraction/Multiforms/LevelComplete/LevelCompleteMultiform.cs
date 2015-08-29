@@ -37,12 +37,16 @@ using DemeterEngine;
 using DemeterEngine.Input;
 using DemeterEngine.Multiforms;
 using DemeterEngine.Multiforms.Forms;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+
 using Refraction_V2.Multiforms.ForegroundContent;
 using Refraction_V2.Multiforms.Level;
+using Refraction_V2.Multiforms.LevelLoad;
 using Refraction_V2.Multiforms.LevelSelect;
 using Refraction_V2.Utils;
+
 using System;
 using System.Collections.Generic;
 
@@ -50,7 +54,7 @@ using System.Collections.Generic;
 
 namespace Refraction_V2.Multiforms.LevelComplete
 {
-	public class LevelCompleteMultiform : Multiform
+    public class LevelCompleteMultiform : RefractionGameMultiform
 	{
 
 		#region Form Info
@@ -245,7 +249,7 @@ namespace Refraction_V2.Multiforms.LevelComplete
 				LevelNameInfo.DecrementLevel();
 
 			data.SetAttr<LevelNameInfo>("LevelNameInfo", LevelNameInfo);
-			Manager.Construct(LevelMultiform.MultiformName, data);
+			Manager.Construct(LevelLoadMultiform.MultiformName, data);
 
 			ClearForms();
 		}

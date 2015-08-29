@@ -6,8 +6,8 @@
   <Fullscreen>false</Fullscreen>
   <AllowFullscreen>true</AllowFullscreen>
 
-  <MouseVisible>true</MouseVisible>
-  <AllowMouseVisibilityToggle>true</AllowMouseVisibilityToggle>
+  <MouseVisible>false</MouseVisible>
+  <AllowMouseVisibilityToggle>false</AllowMouseVisibilityToggle>
 
   <Borderless>false</Borderless>
   <AllowBorderlessnessToggle>true</AllowBorderlessnessToggle>

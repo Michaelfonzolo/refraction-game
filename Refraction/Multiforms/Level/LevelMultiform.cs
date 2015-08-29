@@ -36,13 +36,14 @@
 using DemeterEngine;
 using DemeterEngine.Input;
 using DemeterEngine.Multiforms;
+
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
+
 using Refraction_V2.Multiforms.LevelComplete;
 using Refraction_V2.Multiforms.LevelSelect;
 using Refraction_V2.Utils;
-using System;
 
 #endregion
 
@@ -117,6 +118,8 @@ namespace Refraction_V2.Multiforms.Level
 		/// </summary>
 		public LevelNameInfo LevelNameInfo { get; private set; }
 
+        public LevelInfo LevelInfo { get; private set; }
+
         /// <summary>
         /// Whether or not the level is paused.
         /// </summary>
@@ -125,10 +128,10 @@ namespace Refraction_V2.Multiforms.Level
         public override void Construct(MultiformTransmissionData args)
         {
             LevelNameInfo = args == null ? new LevelNameInfo(0) : args.GetAttr<LevelNameInfo>("LevelNameInfo");
-            var levelInfo = args.GetAttr<LevelInfo>("LevelInfo");
+            LevelInfo = args.GetAttr<LevelInfo>("LevelInfo");
 
-            RegisterForm(BoardFormName, new BoardForm(levelInfo));
-            RegisterForm(InventoryFormName, new InventoryForm(levelInfo));
+            RegisterForm(BoardFormName, new BoardForm(LevelInfo));
+            RegisterForm(InventoryFormName, new InventoryForm(LevelInfo));
             RegisterForm(BackButtonFormName, new GUIButton(
                 BackButtonInfo, BackButtonBottomLeft, PositionType.BottomLeft));
 
@@ -156,6 +159,7 @@ namespace Refraction_V2.Multiforms.Level
 
                     var data = new MultiformTransmissionData(MultiformName);
                     data.SetAttr<LevelNameInfo>("LevelNameInfo", LevelNameInfo);
+                    data.SetAttr<LevelInfo>("LevelInfo", LevelInfo);
 
                     FadeOutAndClose(
                         20, Color.White, LevelCompleteMultiform.MultiformName, 

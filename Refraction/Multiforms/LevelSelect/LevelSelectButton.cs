@@ -37,9 +37,9 @@ using DemeterEngine.Collision;
 using DemeterEngine.Graphics;
 using DemeterEngine.Input;
 using DemeterEngine.Multiforms.Forms;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 
 #endregion
 

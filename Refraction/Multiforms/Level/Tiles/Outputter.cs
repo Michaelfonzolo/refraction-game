@@ -35,7 +35,9 @@
 
 using DemeterEngine;
 using DemeterEngine.Graphics;
+
 using Microsoft.Xna.Framework;
+
 using System;
 
 #endregion

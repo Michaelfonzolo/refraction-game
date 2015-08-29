@@ -157,8 +157,20 @@ namespace DemeterEngine.Multiforms
 
         private bool iteratingPostUpdateEvents = false;
 
-        // Yeah, we need this...
+        // Yeah, we need this... It's because certain postUpdateEvents can trigger events which
+        // manipulate the postUpdateEvent list, such as constructing a Multiform who's constructor
+        // calls Manager.BringToFront() or something.
         private List<PostUpdateEvent> postPostUpdateEvents = new List<PostUpdateEvent>();
+
+        /// <summary>
+        /// The list of background forms in render order.
+        /// </summary>
+        private List<string> background = new List<string>();
+
+        /// <summary>
+        /// The list of foreground forms in render order.
+        /// </summary>
+        private List<string> foreground = new List<string>();
 
         public MultiformManager() { }
 
@@ -349,25 +361,58 @@ namespace DemeterEngine.Multiforms
             postPostUpdateEvents.Clear();
         }
 
+        private void Render(string name)
+        {
+            var m = registeredMultiforms[name];
+            if (m.Renderer == null)
+                throw new MultiformException(
+                    String.Format("The multiform with the name \"{0}\" has no renderer.", name)
+                    );
+            m.Renderer();
+        }
+
         /// <summary>
         /// Render all the currently multiforms.
         /// </summary>
         /// <param name="serviceLocator"></param>
         public void Render()
         {
-            Multiform m;
+            foreach (var name in background)
+            {
+                Render(name);
+            }
+
+            // Render the middleground.
+
             // Iterate through the currently active multiforms in reverse order so as to render
             // them in reverse order. This makes multiforms at the front get rendered last, so
             // as to appear on top of multiforms closer to the back.
             for (int i = currentlyActive.Count - 1; i >= 0; i--)
             {
-                m = registeredMultiforms[currentlyActive[i]];
-                if (m.Renderer == null)
-                    throw new MultiformException(
-                        String.Format("The multiform with the name \"{0}\" has no renderer.", currentlyActive[i])
-                        );
-                m.Renderer();
+                var name = currentlyActive[i];
+
+                if (background.Contains(name) || foreground.Contains(name))
+                {
+                    continue;
+                }
+
+                Render(name);
             }
+
+            foreach (var name in foreground)
+            {
+                Render(name);
+            }
+        }
+
+        public void SetBackgroundOrder(params string[] names)
+        {
+            background = new List<string>(names);
+        }
+
+        public void SetForegroundOrder(params string[] names)
+        {
+            foreground = new List<string>(names);
         }
     }
 }

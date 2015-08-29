@@ -37,7 +37,9 @@
 #region Using Statements
 
 using DemeterEngine.Extensions;
+
 using Microsoft.Xna.Framework;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -100,7 +102,11 @@ namespace Refraction_V2.Multiforms.Level
             {TileType.RF_ULxUR_U, 0},
             {TileType.RF_ULxDL_L, 0},
             {TileType.RF_URxDR_R, 0},
-            {TileType.RF_DLxDR_D, 0}
+            {TileType.RF_DLxDR_D, 0},
+            {TileType.RF_U_L_and_U_R_pass_UL, 0},
+            {TileType.RF_U_L_and_U_R_pass_UR, 0},
+            {TileType.RF_UL_DL_and_UR_DR_pass_L, 0},
+            {TileType.RF_UL_UR_and_DL_DR_pass_U, 0}
         };
 
         /// <summary>
@@ -110,7 +116,8 @@ namespace Refraction_V2.Multiforms.Level
         public static TileType[][] InventoryTileOrder = new[] 
         {
             new[] {TileType.RF_UxL_UL, TileType.RF_UxR_UR, TileType.RF_DxR_DR, TileType.RF_DxL_DL},
-            new[] {TileType.RF_ULxUR_U, TileType.RF_ULxDL_L, TileType.RF_URxDR_R, TileType.RF_DLxDR_D}
+            new[] {TileType.RF_ULxUR_U, TileType.RF_ULxDL_L, TileType.RF_URxDR_R, TileType.RF_DLxDR_D},
+            new[] {TileType.RF_U_L_and_U_R_pass_UL, TileType.RF_U_L_and_U_R_pass_UR, TileType.RF_UL_DL_and_UR_DR_pass_L, TileType.RF_UL_UR_and_DL_DR_pass_U}
         };
 
 		public List<TileType> InactiveInventory = new List<TileType>();

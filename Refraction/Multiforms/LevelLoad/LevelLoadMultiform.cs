@@ -1,64 +1,153 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
+﻿#region License
+
+// Copyright (c) 2015 FCDM
+// Permission is hereby granted, free of charge, to any person obtaining 
+// a copy of this software and associated documentation files (the "Software"), 
+// to deal in the Software without restriction, including without limitation the 
+// rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell 
+// copies of the Software, and to permit persons to whom the Software is furnished 
+// to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in all 
+// copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+// INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+// PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION 
+// OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+#endregion
+
+#region Header
+
+/* 
+ * Author: Michael Ala
+ */
+
+#endregion
+
+#region Using Statements
+
 using DemeterEngine;
 using DemeterEngine.Input;
 using DemeterEngine.Multiforms;
-using DemeterEngine.Multiforms.Forms;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+
+using Refraction_V2.Multiforms.Effectors;
 using Refraction_V2.Multiforms.Level;
 using Refraction_V2.Multiforms.LevelSelect;
-using Refraction_V2.Multiforms.Effectors;
+
+using System;
+using System.Collections.Generic;
+using System.Windows.Forms;
+
+#endregion
 
 namespace Refraction_V2.Multiforms.LevelLoad
 {
+
+    /// <summary>
+    /// The multiform that appears inbetween choosing a level on the level select menu
+    /// and the level multiform itself. This multiform is only really visible if an error
+    /// occurs in loading the level, in which case some user-friendly messages will be
+    /// displayed. Otherwise, the level just gets loaded and LevelMultiform is constructed.
+    /// </summary>
     public class LevelLoadMultiform : RefractionGameMultiform
     {
 
+        #region Form Name Constants
+
         public const string MultiformName = "LevelLoad";
 
-        public const int MESSAGE_LINE_GAP = 50;
-
-        public const int ERROR_WARNING_GAP = 100;
-
-        public const string FATAL_ERROR_MESSAGE = "A fatal error occurred when loading the level:";
-
-        public const string NON_FATAL_ERROR_MESSAGE = "The following non-fatal error(s) occurred when loading the level:";
-
-        public const string ADDITIONAL_NON_FATAL_ERROR_MESSAGE = "The following non-fatal error(s) occurred as well:";
-
-        public const string PRESS_TO_COPY_MESSAGE = "Press CTRL + C to copy these messages, or click to continue.";
-
-        public const string MESSAGES_COPIED_MESSAGE = "Messages copied! Click to continue.";
-
-        public static readonly Microsoft.Xna.Framework.Input.Keys CTRL = Microsoft.Xna.Framework.Input.Keys.LeftControl;
-
-        public static readonly Microsoft.Xna.Framework.Input.Keys C = Microsoft.Xna.Framework.Input.Keys.C;
-
+        /// <summary>
+        /// The name of the message PRESS_TO_COPY_MESSAGE. The reason we need a name for this form
+        /// specifically is because if the user presses CTRL + C, then 
+        /// </summary>
         public const string PressToCopyMessageFormName = "PressToCopyMessage";
 
+        #endregion
+
+        #region Form Property Constants and Messages
+
+        private const int MESSAGE_LINE_GAP = 50;
+
+        private const int ERROR_WARNING_GAP = 100;
+
+        /// <summary>
+        /// The maximum number of warning messages displayed on screen at once. This is
+        /// to prevent text overflow past the boundaries of the screen.
+        /// </summary>
+        private const int MAX_WARNING_MESSAGES_DISPLAYED = 3;
+
+        private const string FATAL_ERROR_MESSAGE = "A fatal error occurred when loading the level:";
+
+        private const string NON_FATAL_ERROR_MESSAGE = "The following non-fatal error(s) occurred when loading the level:";
+
+        private const string ADDITIONAL_NON_FATAL_ERROR_MESSAGE = "The following non-fatal error(s) occurred as well:";
+
+        private const string PRESS_TO_COPY_MESSAGE = "Press CTRL + C to copy these messages, or click to continue.";
+
+        private const string MESSAGES_COPIED_MESSAGE = "Messages copied! Click to continue.";
+
+        #endregion
+
+        // These are just here because I didn't want to type their full
+        // names in the Update method.
+        public static readonly Microsoft.Xna.Framework.Input.Keys CTRL = Microsoft.Xna.Framework.Input.Keys.LeftControl;
+        public static readonly Microsoft.Xna.Framework.Input.Keys C = Microsoft.Xna.Framework.Input.Keys.C;
+
+        /// <summary>
+        /// The LevelNameInfo object associated with the loaded level.
+        /// </summary>
         public LevelNameInfo LevelNameInfo { get; private set; }
 
+        /// <summary>
+        /// The LevelInfo object describing the properties of the level.
+        /// </summary>
         public LevelInfo LevelInfo { get; private set; }
 
+        /// <summary>
+        /// Any warning messages that occurred when loading the level.
+        /// </summary>
         public List<string> WarningMessages = new List<string>();
 
-        private bool Error = false;
+        /// <summary>
+        /// Whether or not an error occurred.
+        /// </summary>
+        private bool FatalError = false;
 
+        /// <summary>
+        /// The error message (if one occurred).
+        /// </summary>
         public string ErrorMessage { get; private set; }
 
+        /// <summary>
+        /// The data to pass on to the LevelMultiform.
+        /// </summary>
         public MultiformTransmissionData TransmissionData { get; private set; }
 
+        /// <summary>
+        /// The list of all registered TextForm objects. We keep a list of them so we can easily
+        /// iterate through them and fade them in over time.
+        /// </summary>
         public List<TextForm> RegisteredTextForms = new List<TextForm>();
 
+        /// <summary>
+        /// The time (frame number) when the user pressed CTRL + C to copy the warning/error
+        /// messages. When this is set to any value other than -1, it activates an if (At(time))
+        /// block in the main update method which fades out the PressToCopyMessage TextForm and
+        /// fades in a new one displaying the MESSAGES_COPIED_MESSAGE.
+        /// </summary>
         private int TimeOfMessagesCopied = -1;
 
         public override void Construct(MultiformTransmissionData args)
         {
+            // Reinitialize variables that may have been carried over from the last
+            // time the multiform was loaded.
             TimeOfMessagesCopied = -1;
             ResetTime();
             WarningMessages.Clear();
@@ -67,8 +156,8 @@ namespace Refraction_V2.Multiforms.LevelLoad
             LevelNameInfo = args.GetAttr<LevelNameInfo>("LevelNameInfo");
             LevelInfo = new LevelInfo(LevelNameInfo.LevelName);
 
-            Error = LevelInfo.Exception != null;
-            if (Error)
+            FatalError = LevelInfo.Exception != null;
+            if (FatalError)
             {
                 ErrorMessage = LevelInfo.Exception.Message;
             }
@@ -90,8 +179,6 @@ namespace Refraction_V2.Multiforms.LevelLoad
 
         private void ConstructMessageForms()
         {
-            var levelName = LevelNameInfo.Sequential ? (LevelNameInfo.LevelNumber + 1).ToString()
-                                                     : LevelNameInfo.LevelName;
             var textFont = Assets.LevelLoad.Fonts.PlainMessage;
             var errorFont = Assets.LevelLoad.Fonts.Error;
 
@@ -101,7 +188,7 @@ namespace Refraction_V2.Multiforms.LevelLoad
             var currentCenter = new Vector2(
                 DisplayManager.WindowWidth / 2f, 
                 (DisplayManager.WindowHeight - textHeight) / 2f);
-            if (Error)
+            if (FatalError)
             {
                 RegisterMessage(FATAL_ERROR_MESSAGE, textFont, MESSAGE_LINE_GAP, ref currentCenter);
                 RegisterMessage(ErrorMessage, errorFont, ERROR_WARNING_GAP, ref currentCenter);
@@ -118,23 +205,28 @@ namespace Refraction_V2.Multiforms.LevelLoad
                 RegisterWarningMessages(errorFont, ref currentCenter);
             }
 
-            if (Error || WarningMessages.Count > 0)
+            if (FatalError || WarningMessages.Count > 0)
             {
                 RegisterMessage(
                     PRESS_TO_COPY_MESSAGE, textFont, 0, ref currentCenter, name: PressToCopyMessageFormName);
             }
         }
 
+        /// <summary>
+        /// Register the warning messages.
+        /// </summary>
+        /// <param name="errorFont"></param>
+        /// <param name="currentCenter"></param>
         private void RegisterWarningMessages(SpriteFont errorFont, ref Vector2 currentCenter)
         {
-            for (int i = 0; i < Math.Min(3, WarningMessages.Count); i++)
+            for (int i = 0; i < Math.Min(MAX_WARNING_MESSAGES_DISPLAYED, WarningMessages.Count); i++)
             {
                 RegisterMessage(WarningMessages[i], errorFont, MESSAGE_LINE_GAP, ref currentCenter);
             }
 
-            if (WarningMessages.Count > 3)
+            if (WarningMessages.Count > MAX_WARNING_MESSAGES_DISPLAYED)
             {
-                var msg = String.Format("({0} more...)", WarningMessages.Count - 3);
+                var msg = String.Format("({0} more...)", WarningMessages.Count - MAX_WARNING_MESSAGES_DISPLAYED);
                 RegisterMessage(msg, errorFont, ERROR_WARNING_GAP, ref currentCenter);
             }
             else
@@ -153,7 +245,7 @@ namespace Refraction_V2.Multiforms.LevelLoad
         private float GetTextHeight(SpriteFont textFont, SpriteFont errorFont)
         {
             var textHeight = 0f;
-            if (Error)
+            if (FatalError)
             {
                 textHeight += textFont.MeasureString(FATAL_ERROR_MESSAGE).Y;
                 textHeight += errorFont.MeasureString(ErrorMessage).Y;
@@ -163,9 +255,10 @@ namespace Refraction_V2.Multiforms.LevelLoad
                 {
                     textHeight += textFont.MeasureString(ADDITIONAL_NON_FATAL_ERROR_MESSAGE).Y;
                     textHeight += MESSAGE_LINE_GAP;
-                    foreach (var message in WarningMessages)
+
+                    for (int i = 0; i < Math.Min(MAX_WARNING_MESSAGES_DISPLAYED, WarningMessages.Count); i++ )
                     {
-                        textHeight += errorFont.MeasureString(message).Y;
+                        textHeight += errorFont.MeasureString(WarningMessages[i]).Y;
                         textHeight += MESSAGE_LINE_GAP;
                     }
                     textHeight += ERROR_WARNING_GAP - MESSAGE_LINE_GAP;
@@ -175,15 +268,15 @@ namespace Refraction_V2.Multiforms.LevelLoad
             {
                 textHeight += textFont.MeasureString(NON_FATAL_ERROR_MESSAGE).Y;
                 textHeight += MESSAGE_LINE_GAP;
-                foreach (var message in WarningMessages)
+                for (int i = 0; i < Math.Min(MAX_WARNING_MESSAGES_DISPLAYED, WarningMessages.Count); i++)
                 {
-                    textHeight += errorFont.MeasureString(message).Y;
+                    textHeight += errorFont.MeasureString(WarningMessages[i]).Y;
                     textHeight += MESSAGE_LINE_GAP;
                 }
                 textHeight += ERROR_WARNING_GAP - MESSAGE_LINE_GAP;
             }
 
-            if (Error || WarningMessages.Count > 0)
+            if (FatalError || WarningMessages.Count > 0)
             {
                 textHeight += textFont.MeasureString(PRESS_TO_COPY_MESSAGE).Y;
             }
@@ -220,7 +313,7 @@ namespace Refraction_V2.Multiforms.LevelLoad
             UpdateTime();
             UpdateForms();
 
-            if (WarningMessages.Count == 0 && !Error)
+            if (WarningMessages.Count == 0 && !FatalError)
             {
                 FadeTo(LevelMultiform.MultiformName);
             }
@@ -230,18 +323,21 @@ namespace Refraction_V2.Multiforms.LevelLoad
                     (KeyboardInput.IsReleased(C) && KeyboardInput.IsPressed(CTRL)))
                 {
                     var messages = new List<string>(WarningMessages);
-                    if (Error)
+                    if (FatalError)
                     {
                         messages.Insert(0, ErrorMessage);
                     }
                     Clipboard.SetText(String.Join("\n", messages));
 
                     GetForm(PressToCopyMessageFormName).AddEffector(new FadeOutEffector(15));
+
+                    // Setting this adds a MESSAGES_COPIED_MESSAGE TextForm, since it activates
+                    // the if (AtFrame(TimeOfMessagesCopied)) if statement below.
                     TimeOfMessagesCopied = LocalFrame + 20;
                 }
                 if (MouseInput.IsReleased(DemeterEngine.Input.MouseButtons.Left))
                 {
-                    if (Error)
+                    if (FatalError)
                     {
                         FadeTo(LevelSelectMultiform.MultiformName);
                     }

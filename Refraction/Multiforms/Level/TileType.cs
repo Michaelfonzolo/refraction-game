@@ -30,15 +30,6 @@
 
 #endregion
 
-#region Using Statements
-
-using DemeterEngine.Utils;
-using Microsoft.Xna.Framework;
-using Refraction_V2.Multiforms.Level.Tiles;
-using System;
-
-#endregion
-
 namespace Refraction_V2.Multiforms.Level
 {
 
@@ -50,6 +41,11 @@ namespace Refraction_V2.Multiforms.Level
         Empty,
         Outputter,
         Receiver,
+        OpenReceiver,
+        OpenReceiver_pass_L,
+        OpenReceiver_pass_U,
+        OpenReceiver_pass_UL,
+        OpenReceiver_pass_UR,
         RF_UxL_UL,
         RF_UxR_UR,
         RF_DxL_DL,
@@ -57,6 +53,10 @@ namespace Refraction_V2.Multiforms.Level
         RF_ULxUR_U,
         RF_DLxDR_D,
         RF_ULxDL_L,
-        RF_URxDR_R
+        RF_URxDR_R,
+        RF_U_L_and_U_R_pass_UL,
+        RF_U_L_and_U_R_pass_UR,
+        RF_UL_DL_and_UR_DR_pass_L,
+        RF_UL_UR_and_DL_DR_pass_U
     }
 }

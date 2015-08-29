@@ -37,8 +37,11 @@
 #region Using Statements
 
 using DemeterEngine.Utils;
+
 using Microsoft.Xna.Framework;
+
 using Refraction_V2.Multiforms.Level.Tiles;
+
 using System;
 
 #endregion
@@ -104,6 +107,14 @@ namespace Refraction_V2.Multiforms.Level
 					return new RF_ULxDL_L(position, Open);
 				case TileType.RF_URxDR_R:
 					return new RF_URxDR_R(position, Open);
+                case TileType.RF_U_L_and_U_R_pass_UL:
+                    return new RF_U_L_and_U_R_pass_UL(position, Open);
+                case TileType.RF_U_L_and_U_R_pass_UR:
+                    return new RF_U_L_and_U_R_pass_UR(position, Open);
+                case TileType.RF_UL_DL_and_UR_DR_pass_L:
+                    return new RF_UL_DL_and_UR_DR_pass_L(position, Open);
+                case TileType.RF_UL_UR_and_DL_DR_pass_U:
+                    return new RF_UL_UR_and_DL_DR_pass_U(position, Open);
 				default:
 					throw new ArgumentException("Invalid TileType.");
 			}

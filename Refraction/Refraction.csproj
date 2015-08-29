@@ -41,11 +41,15 @@
     <Compile Include="Assets.cs" />
     <Compile Include="LoadedLevelManager.cs" />
     <Compile Include="Multiforms\AnimatedLaserSegment.cs" />
+    <Compile Include="Multiforms\Background\BackgroundMultiform.cs" />
     <Compile Include="Multiforms\Effectors\FadeInEffector.cs" />
     <Compile Include="Multiforms\Effectors\FadeOutEffector.cs" />
     <Compile Include="Multiforms\Effectors\FloatToPositionEffector.cs" />
     <Compile Include="Multiforms\ForegroundContent\ClickParticle.cs" />
     <Compile Include="Multiforms\ForegroundContent\ClickParticleSpawnerForm.cs" />
+    <Compile Include="Multiforms\ForegroundContent\ForegroundContentMultiform.cs" />
+    <Compile Include="Multiforms\ForegroundContent\MouseCursorForm.cs" />
+    <Compile Include="Multiforms\ForegroundContent\MouseTrailForm.cs" />
     <Compile Include="Multiforms\GUIButton.cs" />
     <Compile Include="Multiforms\GUIButtonInfo.cs" />
     <Compile Include="Multiforms\ITransitionalForm.cs" />
@@ -69,6 +73,7 @@
     <Compile Include="Multiforms\Level\LevelNumberException.cs" />
     <Compile Include="Multiforms\Level\TileInfo.cs" />
     <Compile Include="Multiforms\Level\Tiles\BasicRefractor.cs" />
+    <Compile Include="Multiforms\Level\Tiles\ComplexRefractorTile.cs" />
     <Compile Include="Multiforms\Level\Tiles\Empty.cs" />
     <Compile Include="Multiforms\Level\Tiles\LevelEndController.cs" />
     <Compile Include="Multiforms\Level\Tiles\LevelTile.cs" />
@@ -80,9 +85,13 @@
     <Compile Include="Multiforms\Level\Tiles\RF_DxR_DR.cs" />
     <Compile Include="Multiforms\Level\Tiles\RF_ULxDL_L.cs" />
     <Compile Include="Multiforms\Level\Tiles\RF_ULxUR_U.cs" />
+    <Compile Include="Multiforms\Level\Tiles\RF_UL_DL_and_UR_DR_pass_L.cs" />
+    <Compile Include="Multiforms\Level\Tiles\RF_UL_UR_and_DL_DR_pass_U.cs" />
     <Compile Include="Multiforms\Level\Tiles\RF_URxDR_R.cs" />
     <Compile Include="Multiforms\Level\Tiles\RF_UxL_UL.cs" />
     <Compile Include="Multiforms\Level\Tiles\RF_UxR_UR.cs" />
+    <Compile Include="Multiforms\Level\Tiles\RF_U_L_and_U_R_pass_UL.cs" />
+    <Compile Include="Multiforms\Level\Tiles\RF_U_L_and_U_R_pass_UR.cs" />
     <Compile Include="Multiforms\Level\TileType.cs" />
     <Compile Include="Multiforms\MainMenu\LogoForm.cs" />
     <Compile Include="Multiforms\MainMenu\MainMenuMultiform.cs" />

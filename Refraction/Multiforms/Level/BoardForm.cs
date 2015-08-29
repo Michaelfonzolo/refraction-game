@@ -37,9 +37,11 @@ using DemeterEngine;
 using DemeterEngine.Collision;
 using DemeterEngine.Input;
 using DemeterEngine.Multiforms;
+
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+
 using Refraction_V2.Multiforms.Level.Tiles;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -249,6 +251,13 @@ namespace Refraction_V2.Multiforms.Level
                 laser.Update();
         }
 
+        /// <summary>
+        /// Perform the appropriate board action (setting a tile, removing a tile, or
+        /// choosing a tile) at the given tile coordinates depending on the mouse button released.
+        /// </summary>
+        /// <param name="button"></param>
+        /// <param name="xIndex"></param>
+        /// <param name="yIndex"></param>
         private void PerformBoardAction(MouseButtons button, int xIndex, int yIndex)
         {
             switch (button)

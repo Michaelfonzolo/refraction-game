@@ -36,8 +36,10 @@ using DemeterEngine;
 using DemeterEngine.Collision;
 using DemeterEngine.Input;
 using DemeterEngine.Multiforms;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+
 using Refraction_V2.Multiforms.ForegroundContent;
 using Refraction_V2.Multiforms.Level;
 using Refraction_V2.Multiforms.LevelLoad;

@@ -36,6 +36,7 @@
 #region Using Statements
 
 using Microsoft.Xna.Framework;
+
 using System.Collections.Generic;
 
 #endregion
