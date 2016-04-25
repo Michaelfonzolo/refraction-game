@@ -54,36 +54,57 @@ namespace Refraction_V2.Multiforms
     public abstract class RefractionGameMultiform : Multiform
     {
 
+        #region Fade-In and Fade-Out Related Fields
+
+        /// <summary>
+        /// The alpha value of the fade-in/out overlay.
+        /// </summary>
         private float FadeAlpha = 0f;
 
+        /// <summary>
+        /// The duration of the current fade-in/out.
+        /// </summary>
         private int FadeDuration = 0;
 
+        /// <summary>
+        /// The colour of the current fade-in/out overlay.
+        /// </summary>
         private Color FadeColour = Color.White;
 
+        // The updater/renderer to use whilst fading in/out, and the updater/renderer
+        // to switch to after the fade in is complete.
         private Action updater, renderer, updaterWhenFinished, rendererWhenFinished;
 
+        /// <summary>
+        /// The name of the multiform to construct after a fade out.
+        /// </summary>
         private string multiformToConstruct;
 
+        /// <summary>
+        /// The data to send to the next multiform after a fade out.
+        /// </summary>
         private MultiformTransmissionData transmissionData;
 
         private bool clearForms;
+
+        #endregion
 
         protected void FadeIn(
             int duration, Color colour, Action updater, Action renderer,
             Action updaterWhenFinished = null,
             Action rendererWhenFinished = null)
         {
-            FadeAlpha = 1f;
+            FadeAlpha    = 1f;
             FadeDuration = duration;
-            FadeColour = colour;
+            FadeColour   = colour;
 
             if (updater == null || renderer == null)
             {
                 throw new ArgumentNullException("Updater and Renderer cannot be null.");
             }
-            this.updater = updater;
-            this.renderer = renderer;
-            this.updaterWhenFinished = updaterWhenFinished;
+            this.updater              = updater;
+            this.renderer             = renderer;
+            this.updaterWhenFinished  = updaterWhenFinished;
             this.rendererWhenFinished = rendererWhenFinished;
 
             SetUpdater(Update_FadeIn);
@@ -96,24 +117,30 @@ namespace Refraction_V2.Multiforms
         protected void FadeOutAndClose(
             int duration, Color colour, string multiformName, 
             MultiformTransmissionData data = null, bool clearForms = true,
-            Action backgroundUpdater = null, Action backgroundRenderer = null)
+            Action backgroundUpdater = null, Action backgroundRenderer = null,
+            bool hideMouseTrail = true)
         {
-            FadeAlpha = 0f;
+            FadeAlpha    = 0f;
             FadeDuration = duration;
-            FadeColour = colour;
+            FadeColour   = colour;
 
             multiformToConstruct = multiformName;
-            transmissionData = data;
-            this.clearForms = clearForms;
+            transmissionData     = data;
+            this.clearForms      = clearForms;
 
-            updater = backgroundUpdater;
+            updater  = backgroundUpdater;
             renderer = backgroundRenderer;
 
             SetUpdater(Update_FadeOut);
             SetRenderer(Render_Fade);
 
-            Manager.GetActiveMultiform<ForegroundContentMultiform>(ForegroundContentMultiform.MultiformName)
-                   .GetForm<MouseTrailForm>(ForegroundContentMultiform.MouseTrailFormName).Hide();
+            if (hideMouseTrail)
+            {
+                // Hide the mouse cursor trail. The way the trail is rendered makes it
+                // look strange on top of backgrounds of certain colours.
+                Manager.GetActiveMultiform<ForegroundContentMultiform>(ForegroundContentMultiform.MultiformName)
+                       .GetForm<MouseTrailForm>(ForegroundContentMultiform.MouseTrailFormName).Hide();
+            }
         }
 
         protected void Update_FadeIn()

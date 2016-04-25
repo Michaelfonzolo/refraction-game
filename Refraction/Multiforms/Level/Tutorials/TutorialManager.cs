@@ -23,37 +23,43 @@
 #region Header
 
 /* Author: Michael Ala
- * 
- * Description
- * ===========
- * A tile that controls whether or not a level ends. In a level, all tiles that
- * are LevelEndControllers must have their Activated property set to true.
  */
 
 #endregion
 
 #region Using Statements
 
-using Microsoft.Xna.Framework;
+using DemeterEngine.Multiforms;
+
+using System;
+using System.Collections.Generic;
 
 #endregion
 
-namespace Refraction_V2.Multiforms.Level.Tiles
+namespace Refraction_V2.Multiforms.Level.Tutorials
 {
-    public abstract class LevelEndController : LevelTile
+
+    /// <summary>
+    /// A static class that keeps track of the tutorial forms which can be loaded and added
+    /// to the game. The different tutorials are index by integer values, which also indicates
+    /// the order in which they appear in the game (note that a tutorial's index is not necessarily
+    /// the index of the level in which it appears).
+    /// </summary>
+    public static class TutorialManager
     {
 
-		/// <summary>
-		/// Whether or not the appropriate laser is passing through this tile.
-		/// </summary>
-        public bool Activated { get; internal set; }
+        private static readonly Dictionary<int, Type> TutorialForms
+            = new Dictionary<int, Type>()
+            {
+                {1, typeof(TutorialForm_001)}
+            };
 
         /// <summary>
-        /// The colour the input laser must be to activate it.
+        /// Return an instance of the tutorial form with the given index.
         /// </summary>
-        public LaserColours InputColour { get; protected set; }
-
-        public LevelEndController(Vector2 position, bool open) : base(position, open) { }
-
+        public static Form GetTutorial(int n)
+        {
+            return (Form)Activator.CreateInstance(TutorialForms[n]);
+        }
     }
 }

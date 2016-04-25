@@ -76,6 +76,7 @@ namespace DemeterEngine
         public const string MOUSE_VISIBLE_ELEMENT                 = "MouseVisible";
         public const string ALLOW_MOUSE_VISIBILITY_TOGGLE_ELEMENT = "AllowMouseVisibilityToggle";        
         public const string BACKGROUND_FILL_COLOUR_ELEMENT        = "BackgroundFillColour";
+        public const string VSYNC_ELEMENT                         = "VSync";
 
         #endregion
 
@@ -144,6 +145,11 @@ namespace DemeterEngine
         /// Whether or not mouse visibility toggling is enabled.
         /// </summary>
         public bool MouseVisibilityTogglable { get; private set; }
+
+        /// <summary>
+        /// Whether or not to use vertically aligned retrace.
+        /// </summary>
+        public bool VSync { get; private set; }
 
         /// <summary>
         /// Whether or not we have already read the gamesetup file.
@@ -248,6 +254,8 @@ namespace DemeterEngine
 
             MouseVisible             = ReadBool(root, MOUSE_VISIBLE_ELEMENT);
             MouseVisibilityTogglable = ReadBool(root, ALLOW_MOUSE_VISIBILITY_TOGGLE_ELEMENT);
+
+            VSync = ReadBool(root, VSYNC_ELEMENT);
 
             done = true;
             return done;

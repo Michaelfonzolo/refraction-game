@@ -41,7 +41,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-using Refraction_V2.Multiforms.Level.Tutorials;
 using Refraction_V2.Multiforms.LevelComplete;
 using Refraction_V2.Multiforms.LevelSelect;
 using Refraction_V2.Utils;
@@ -74,13 +73,6 @@ namespace Refraction_V2.Multiforms.Level
         /// The name of the back button form instance.
         /// </summary>
         public const string BackButtonFormName = "BackButton";
-
-        /// <summary>
-        /// The name of the tutorial form instance (if it exists).
-        /// </summary>
-        public const string TutorialFormName = "Tutorial";
-
-        public bool HasTutorialForm { get; private set; }
 
         /// <summary>
         /// The GUIButtonInfo for the back button.
@@ -143,13 +135,6 @@ namespace Refraction_V2.Multiforms.Level
             RegisterForm(BackButtonFormName, new GUIButton(
                 BackButtonInfo, BackButtonBottomLeft, PositionType.BottomLeft));
 
-            HasTutorialForm = LevelInfo.TutorialNumber.HasValue;
-            if (HasTutorialForm)
-            {
-                var num = LevelInfo.TutorialNumber.Value;
-                RegisterForm(TutorialFormName, TutorialManager.GetTutorial(num));
-            }
-
             FadeIn(20, Color.White, Update_Main, Render_Main);
         }
 
@@ -172,7 +157,9 @@ namespace Refraction_V2.Multiforms.Level
                     if (LevelNameInfo.Sequential)
                     {
                         if (LevelNameInfo.LevelNumber.Value == LoadedLevelManager.HighestUnlockedLevel)
+                        {
                             LoadedLevelManager.HighestUnlockedLevel++;
+                        }
                     }
                     var data = new MultiformTransmissionData(MultiformName);
                     data.SetAttr<LevelNameInfo>("LevelNameInfo", LevelNameInfo);
@@ -195,11 +182,6 @@ namespace Refraction_V2.Multiforms.Level
         public void Render_Main()
         {
             RenderForms(BoardFormName, InventoryFormName, BackButtonFormName);
-
-            if (HasTutorialForm)
-            {
-                RenderForm(TutorialFormName);
-            }
             
             if (Paused)
             {
@@ -229,9 +211,9 @@ namespace Refraction_V2.Multiforms.Level
 
         private void RenderPauseMessage(string message, Vector2 center)
         {
-            var dimensions = Assets.Level.Fonts.PauseMessage.MeasureString(message);
+            var dimensions = Assets.Level.Fonts.PauseText.MeasureString(message);
             var topleft = PositionConverter.ToTopLeft(center, dimensions.X, dimensions.Y, PositionType.Center);
-            DisplayManager.DrawString(Assets.Level.Fonts.PauseMessage, message, topleft, PauseTextColour);
+            DisplayManager.DrawString(Assets.Level.Fonts.PauseText, message, topleft, PauseTextColour);
         }
 
     }

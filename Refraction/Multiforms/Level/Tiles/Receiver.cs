@@ -53,11 +53,6 @@ namespace Refraction_V2.Multiforms.Level.Tiles
         public Directions InputDirection { get; private set; }
 
 		/// <summary>
-		/// The colour the input laser must be to activate it.
-		/// </summary>
-        public LaserColours InputColour { get; private set; }
-
-		/// <summary>
 		/// The sprite representing this tile.
 		/// </summary>
         public Sprite TileSprite { get; private set; }

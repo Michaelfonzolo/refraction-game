@@ -37,6 +37,7 @@ using DemeterEngine.Multiforms;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 using Refraction_V2.Multiforms.Level;
 
@@ -107,7 +108,7 @@ namespace Refraction_V2.Multiforms.ForegroundContent
         {
             base.Update();
 
-            if (MouseInput.IsClicked(MouseButtons.Left))
+            if (MouseInput.IsClicked(MouseButtons.Left) || KeyboardInput.IsClicked(Keys.Z) || KeyboardInput.IsClicked(Keys.X))
             {
                 var col = Colours[currentColour];
                 var pos = MouseInput.MouseVector;

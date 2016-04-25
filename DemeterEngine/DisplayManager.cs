@@ -152,7 +152,7 @@ namespace DemeterEngine
         }
 
         public static void Initialize(
-            Game game, GraphicsDeviceManager graphicsManager,
+            GameKernel game, GraphicsDeviceManager graphicsManager,
             SpriteBatch spriteBatch, GameSetupReader gameSetup)
         {
             Instance.game = game;
@@ -161,6 +161,8 @@ namespace DemeterEngine
             Instance.spriteBatch = spriteBatch;
             Instance.window = game.Window;
             Instance.GameSetup = gameSetup;
+
+            graphicsManager.SynchronizeWithVerticalRetrace = gameSetup.VSync;
 
             Instance.windowResolution = gameSetup.WindowResolution;
             Instance.borderless = gameSetup.BorderlessOnStartup;

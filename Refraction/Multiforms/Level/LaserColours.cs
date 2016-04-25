@@ -51,6 +51,11 @@ namespace Refraction_V2.Multiforms.Level
             Color = color;
         }
 
+        public override string ToString()
+        {
+            return Color.ToString();
+        }
+
         public static readonly LaserColours Red    = new LaserColours(Color.Red);
         public static readonly LaserColours Blue   = new LaserColours(Color.Blue);
         public static readonly LaserColours Green  = new LaserColours(Color.Green);

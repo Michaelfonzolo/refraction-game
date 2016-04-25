@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Level>
+	<Board>
+		<Row>
+			<Tile Type="Outputter" Direction="Up" Colour="Red"/>
+			<Tile Type="Outputter" Direction="Up" Colour="Blue"/>
+			<Tile Type="Outputter" Direction="Up" Colour="Green"/>
+			<Tile Type="Outputter" Direction="Up" Colour="Yellow"/>
+		</Row>
+		<EmptyRow/>
+		<EmptyRow/>
+		<EmptyRow/>
+		<Row>
+			<Tile Type="RF_ULxUR_U"/>
+			<Tile Type="RF_ULxUR_U"/>
+			<Tile Type="RF_ULxUR_U"/>
+			<Tile Type="RF_ULxUR_U"/>
+		</Row>
+		<EmptyRow/>
+		<Row>
+			<Tile Type="Receiver" Direction="Up" Colour="Yellow"/>
+			<Tile Type="Receiver" Direction="Up" Colour="Red"/>
+			<Tile Type="Receiver" Direction="Up" Colour="Green"/>
+			<Tile Type="Receiver" Direction="Up" Colour="Blue"/>
+		</Row>
+	</Board>
+	<Inventory>
+		<Tile Type="RF_UxL_UL" Count="10"/>
+		<Tile Type="RF_UxR_UR" Count="10"/>
+		<Tile Type="RF_DxR_DR" Count="10"/>
+		<Tile Type="RF_DxL_DL" Count="10"/>
+		<Tile Type="RF_ULxDL_L" Count="10"/>
+		<Tile Type="RF_URxDR_R" Count="10"/>
+		<Tile Type="RF_ULxUR_U" Count="10"/>
+		<Tile Type="RF_DLxDR_D" Count="10"/>
+		<Tile Type="RF_U_L_and_U_R_pass_UL" Count="10"/>
+		<Tile Type="RF_U_L_and_U_R_pass_UR" Count="10"/>
+		<Tile Type="RF_UL_DL_and_UR_DR_pass_L" Count="10"/>
+		<Tile Type="RF_UL_UR_and_DL_DR_pass_U" Count="10"/>
+	</Inventory>
+</Level>

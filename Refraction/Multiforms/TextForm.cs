@@ -60,7 +60,6 @@ namespace Refraction_V2.Multiforms
         public void SetAlpha(float alpha)
         {
             Alpha = alpha;
-            // Console.WriteLine(Alpha);
         }
 
         public Vector2 GetPosition(PositionType positionType)

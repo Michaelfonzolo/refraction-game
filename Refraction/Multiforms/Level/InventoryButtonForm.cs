@@ -130,17 +130,17 @@ namespace Refraction_V2.Multiforms.Level
 
         private const float QUANTITY_TEXT_SCALE_TIME_INCREMENT = 0.03f;
 
-        private const float QUANTITY_TEXT_SCALE_DEFAULT = 0.5f;
+        private const float QUANTITY_TEXT_SCALE_DEFAULT = 0.6f;
 
         /// <summary>
         /// The initial y-value of the text scale function.
         /// </summary>
-        private const float QTS_Y0 = 0.5f;
+        private const float QTS_Y0 = QUANTITY_TEXT_SCALE_DEFAULT;
 
         /// <summary>
         /// The maximum y-value of the text scale function.
         /// </summary>
-        private const float QTS_Y1 = 0.8f;
+        private const float QTS_Y1 = 1.1f;
 
         /// <summary>
         /// The initial x-value of the text scale function.

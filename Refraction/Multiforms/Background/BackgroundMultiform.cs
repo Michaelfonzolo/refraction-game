@@ -122,10 +122,12 @@ namespace Refraction_V2.Multiforms.Background
             var pos = OffsetFunction(LocalFrame);
             var rotation = RotationFunction(LocalFrame);
 
+            /*
             DisplayManager.Draw(
                 BackgroundTexture, pos, null, Color.White * BG_ALPHA, 
                 rotation, Vector2.Zero, BG_SCALE, SpriteEffects.None, 0f
                 );
+             */
         }
 
     }

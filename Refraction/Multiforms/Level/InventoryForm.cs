@@ -53,7 +53,14 @@ namespace Refraction_V2.Multiforms.Level
     public class InventoryForm : Form
     {
 
-		/// <summary>
+        #region Look and Feel Constants
+
+        public const float INVENTORY_BUTTON_X_GAP = 30;
+        public const float INVENTORY_BUTTON_Y_GAP = 10;
+
+        #endregion
+
+        /// <summary>
 		/// The currently selected tile type or null.
 		/// </summary>
         public TileType? CurrentlySelectedTile { get; internal set; }
@@ -82,6 +89,11 @@ namespace Refraction_V2.Multiforms.Level
 		/// </summary>
 		public SpriteFont ItemQuantityFont { get; private set; }
 
+        /// <summary>
+        /// A flag indicating whether or not the tile selection has changed.
+        /// </summary>
+        public bool SelectionChanged { get; private set; }
+
         public InventoryForm(LevelInfo info)
             : base(true)
         {
@@ -96,8 +108,8 @@ namespace Refraction_V2.Multiforms.Level
                 CurrentlySelectedTile = null;
             }
 
-            var invButtonWidth  = Assets.Level.Images.InventoryButton.Width;
-            var invButtonHeight = Assets.Level.Images.InventoryButton.Height;
+            var invButtonWidth  = Assets.Level.Images.InventoryButton.Width + INVENTORY_BUTTON_X_GAP;
+            var invButtonHeight = Assets.Level.Images.InventoryButton.Height + INVENTORY_BUTTON_Y_GAP;
 
             var inv_h = invButtonHeight * LevelInfo.InventoryTileOrder[0].Length;
 			var y = (DisplayManager.WindowResolution.Height - inv_h - invButtonHeight) / 2; 
@@ -106,7 +118,7 @@ namespace Refraction_V2.Multiforms.Level
             var x = (DisplayManager.WindowResolution.Width
                      + Assets.Level.Images.EmptyTile.Width * info.BoardDimensions.X
                      + LevelInfo.BOARD_INVENTORY_GAP) / 2f
-                  - invButtonWidth;
+                  - invButtonWidth + INVENTORY_BUTTON_X_GAP;
 
             int i = 0, j = 0;
             foreach (var column in LevelInfo.InventoryTileOrder)
@@ -151,6 +163,8 @@ namespace Refraction_V2.Multiforms.Level
         {
             base.Update();
 
+            SelectionChanged = false;
+
             TileType type;
             InventoryButtonForm button;
             foreach (var kvp in InventoryButtons)
@@ -161,6 +175,7 @@ namespace Refraction_V2.Multiforms.Level
                 button.Update();
                 if (button.IsReleased(MouseButtons.Left))
                 {
+                    SelectionChanged = type != CurrentlySelectedTile;
                     CurrentlySelectedTile = type;
                 }
             }

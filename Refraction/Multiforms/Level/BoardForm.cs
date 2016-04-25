@@ -87,7 +87,17 @@ namespace Refraction_V2.Multiforms.Level
         /// <summary>
         /// A flag that indicates to the form when to update the lasers.
         /// </summary>
-        private bool BoardChanged = true;
+        public bool BoardChanged { get; private set; }
+
+        /// <summary>
+        /// A flag that indicates when a tile has been added to the board.
+        /// </summary>
+        public bool TileAdded { get; private set; }
+
+        /// <summary>
+        /// A flag that indicates when a tile has been removed from the board.
+        /// </summary>
+        public bool TileRemoved { get; private set; }
 
         public BoardForm(LevelInfo levelInfo)
             : base(true)
@@ -115,6 +125,21 @@ namespace Refraction_V2.Multiforms.Level
             }
 
             Lasers = new List<Laser>();
+
+            BoardChanged = true;
+        }
+
+        public bool IsReceiverActivated(LaserColours colour)
+        {
+            foreach (var pos in LevelInfo.Receivers)
+            {
+                var tile = (LevelEndController)Board[pos.Y, pos.X];
+                if (tile.InputColour == colour && tile.Activated)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
@@ -192,6 +217,9 @@ namespace Refraction_V2.Multiforms.Level
         public override void Update()
         {
             base.Update();
+
+            TileAdded = false;
+            TileRemoved = false;
 
             foreach (var tile in Board)
                 tile.Update();
@@ -310,6 +338,7 @@ namespace Refraction_V2.Multiforms.Level
             inventory.DecrementCurrentTileCount();
 
             BoardChanged = true;
+            TileAdded = true;
         }
 
         /// <summary>
@@ -335,6 +364,7 @@ namespace Refraction_V2.Multiforms.Level
             Board[yIndex, xIndex].HoverSpriteAlpha = prevAlpha;
 
             BoardChanged = true;
+            TileRemoved = true;
         }
 
 		private void ChooseTile(int xIndex, int yIndex)
@@ -350,6 +380,19 @@ namespace Refraction_V2.Multiforms.Level
 
         private void RetraceLasers()
         {
+            foreach (var receiverPosition in LevelInfo.Receivers)
+            {
+                var receiver = (LevelEndController)Board[receiverPosition.Y, receiverPosition.X];
+
+                // We have to reset the Activated property to false because we retrace the lasers
+                // each time the board gets updated, which in turn will reactivate the Activated
+                // property anyways if a laser reaches it's associated receiver.
+                //
+                // If we didn't do this, then a player could beat a level by simply activating all
+                // receivers sequentially, instead of all at once.
+                receiver.Activated = false;
+            }
+
             // Clear the previous lasers.
             Lasers.Clear();
 
@@ -368,14 +411,6 @@ namespace Refraction_V2.Multiforms.Level
             {
                 var receiver = (LevelEndController)Board[receiverPosition.Y, receiverPosition.X];
                 levelComplete &= receiver.Activated;
-
-                // We have to reset the Activated property to false because we retrace the lasers
-                // each time the board gets updated, which in turn will reactivate the Activated
-                // property anyways if a laser reaches it's associated receiver.
-                //
-                // If we didn't do this, then a player could beat a level by simply activating all
-                // receivers sequentially, instead of all at once.
-                receiver.Activated = false;
             }
             LevelComplete = levelComplete;
 

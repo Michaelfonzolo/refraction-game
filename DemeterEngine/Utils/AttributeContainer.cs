@@ -52,6 +52,21 @@ namespace DemeterEngine.Utils
         /// </summary>
         private Dictionary<Type, object> attributes = new Dictionary<Type, object>();
 
+        public bool HasAttr<T>(string name)
+        {
+            var t = typeof(T);
+
+            object obj;
+
+            if (attributes.TryGetValue(t, out obj))
+            {
+                // ``obj`` is never null, so we don't have to use ``as``, we can just cast.
+                Dictionary<string, T> dictionary = (Dictionary<string, T>)obj;
+                return dictionary.ContainsKey(name);
+            }
+            return false;
+        }
+
         /// <summary>
         /// Retrieve an attribute by it's name.
         /// </summary>

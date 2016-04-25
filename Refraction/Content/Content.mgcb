@@ -19,12 +19,6 @@
 /processorParam:TextureFormat=NoChange
 /build:Level/Fonts/InventoryItem.spritefont
 
-#begin Level/Fonts/PauseText.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:TextureFormat=Compressed
-/build:Level/Fonts/PauseText.spritefont
-
 #begin Level/Images/BackButton.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -339,7 +333,7 @@
 #begin LevelLoad/Fonts/PlainMessage.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
-/processorParam:TextureFormat=DxtCompressed
+/processorParam:TextureFormat=NoChange
 /build:LevelLoad/Fonts/PlainMessage.spritefont
 
 #begin Shared/Images/MouseTrailSegment.png
@@ -495,4 +489,22 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:TextureFormat=Color
 /build:Level/Images/WallTile.png
+
+#begin Level/Fonts/PauseMessage.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Level/Fonts/PauseMessage.spritefont
+
+#begin Level/Fonts/TutorialMessage_Large.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Level/Fonts/TutorialMessage_Large.spritefont
+
+#begin Level/Fonts/TutorialMessage_Small.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:Level/Fonts/TutorialMessage_Small.spritefont
 

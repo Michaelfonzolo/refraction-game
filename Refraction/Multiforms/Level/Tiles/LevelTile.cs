@@ -128,6 +128,10 @@ namespace Refraction_V2.Multiforms.Level.Tiles
             EmptyTileSprite.Position = position;
             TileHoverSprite.Position = position;
 
+            // EmptyTileSprite.Tint = new Color(171, 183, 224);
+            // EmptyTileSprite.Tint = new Color(122, 202, 233);
+            // EmptyTileSprite.Tint = Color.LightGray;
+
             MousePressed = new Dictionary<MouseButtons, bool>();
             foreach (var button in Enum.GetValues(typeof(MouseButtons)).Cast<MouseButtons>())
                 MousePressed[button] = false;

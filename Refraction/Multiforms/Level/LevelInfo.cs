@@ -123,11 +123,19 @@ namespace Refraction_V2.Multiforms.Level
 		public List<TileType> InactiveInventory = new List<TileType>();
 
         /// <summary>
+        /// The number of the tutorial to load.
+        /// </summary>
+        public int? TutorialNumber { get; private set; }
+
+        /// <summary>
         /// A list of all warning messages regarding non-fatal issues that occurred whilst
         /// loading the level file.
         /// </summary>
         public HashSet<string> WarningMessages = new HashSet<string>();
 
+        /// <summary>
+        /// The exception thrown when attempting to load the level, if level loading failed.
+        /// </summary>
         public LevelLoadException Exception { get; private set; }
 
         public LevelInfo(string levelName, bool mock = false)
@@ -228,51 +236,56 @@ namespace Refraction_V2.Multiforms.Level
 
 		private void Error_UnexpectedRootNodes()
 		{
-			throw new LevelLoadException("expected an XmlDeclaration and exactly one root element.");
+			throw new LevelLoadException("Expected an XmlDeclaration and exactly one root element.");
 		}
+
+        private void Error_NoRootChildren()
+        {
+            throw new LevelLoadException("Root node has no children. Requires at least one child.");
+        }
 
 		private void Error_UnexpectedRootNodeName(string name)
 		{
 			throw new LevelLoadException(
-				String.Format("expected root element to have name \"Level\"; got \"{0}\" instead.", name));
+				String.Format("Expected root element to have name \"Level\"; got \"{0}\" instead.", name));
 		}
 
 		private void Error_UnexpectedRootChildrenCount()
 		{
-			throw new LevelLoadException("expected \"Level\" element to contain two children.");
+			throw new LevelLoadException("Expected \"Level\" element to contain 2 or 3 children.");
 		}
 
 		private void Error_UnexpectedRootChildren()
 		{
 			throw new LevelLoadException(
-				"expected one \"Board\" element and one \"Inventory\" element in \"Level\" root.");
+				"Expected one \"Board\" element and one \"Inventory\" element in \"Level\" root.");
 		}
 
 		private void Error_InconsistentBoardRowWidths()
 		{
-			throw new LevelLoadException("inconsisten board row widths.");
+			throw new LevelLoadException("Inconsistent board row widths.");
 		}
 
 		private void Error_IndeterminateBoardWidth()
 		{
-			throw new LevelLoadException("could not determine board width.");
+			throw new LevelLoadException("Could not determine board width.");
 		}
 
 		private void Error_InvalidBoardTileElement(string name)
 		{
-			throw new LevelLoadException(String.Format("invalid tile element {0} encountered.", name));
+			throw new LevelLoadException(String.Format("Invalid tile element {0} encountered.", name));
 		}
 
 		private void Error_NoTypeAttribute()
 		{
-			throw new LevelLoadException("all tile elements expected to have a \"Type\" attribute.");
+			throw new LevelLoadException("All tile elements expected to have a \"Type\" attribute.");
 		}
 
 		private void Error_NoColourOrDirectionAttribute(string name)
 		{
 			throw new LevelLoadException(
 				String.Format(
-					"all {0} elements expected to have a \"Colour\" " +
+					"All {0} elements expected to have a \"Colour\" " +
 					"attribute and a \"Direction\" attribute.", name
 					)
 				);
@@ -280,13 +293,13 @@ namespace Refraction_V2.Multiforms.Level
 
 		private void Error_InvalidAttributeValue(string attribute, string value)
 		{
-			throw new LevelLoadException(String.Format("invalid {0} {1}.", attribute, value));
+			throw new LevelLoadException(String.Format("Invalid {0} {1}.", attribute, value));
 		}
 
 		private void Error_UnexpectedInventoryElement()
 		{
 			throw new LevelLoadException(
-				"expected only \"Tile\" and \"InactivateRemaining\" elements in \"Inventory\".");
+				"Expected only \"Tile\" and \"InactivateRemaining\" elements in \"Inventory\".");
 		}
 
 		private void Error_NoCountAttribute()
@@ -295,9 +308,18 @@ namespace Refraction_V2.Multiforms.Level
 				"All \"Tile\" elements in \"Inventory\" are expected to have a \"Count\" attribute.");
 		}
 
-		private const string WARNING_COULDNT_PARSE_OPEN = "Could not parse \"Open\" attribute with value \"{0}\".";
+        private void Error_NoBoardElement()
+        {
+            throw new LevelLoadException("No \"Board\" element was supplied.");
+        }
 
-		private const string WARNING_COULDNT_PARSE_COUNT = "Could not parse \"Count\" attribute with value \"{0}\".";
+		private const string WARNING_COULDNT_PARSE_OPEN = "Couldn't parse \"Open\" attribute's value \"{0}\".";
+
+		private const string WARNING_COULDNT_PARSE_COUNT = "Couldn't parse \"Count\" attribute's value \"{0}\".";
+
+        private const string WARNING_COULDNT_PARSE_TUTORIAL = "Couldn't parse \"LoadTutorial\"'s text \"{0}\" as an integer.";
+
+        private const string WARNING_EMPTY_INVENTORY = "No inventory was supplied, so it will be empty.";
 
 		private void Warn_CouldntParseOpenAttribute(string received)
 		{
@@ -309,41 +331,47 @@ namespace Refraction_V2.Multiforms.Level
 			WarningMessages.Add(String.Format(WARNING_COULDNT_PARSE_COUNT, received));
 		}
 
+        private void Warn_CouldntParseTutorialNumber(string received)
+        {
+            WarningMessages.Add(String.Format(WARNING_COULDNT_PARSE_TUTORIAL, received));
+        }
+
+        private void Warn_EmptyInventory()
+        {
+            WarningMessages.Add(WARNING_EMPTY_INVENTORY);
+        }
+
 		#endregion
 
-		#region XmlElement and Attribute Names
+		#region XmlElement
 
-		public const string ROOT_ELEMENT = "Level";
+		public const string ROOT_ELEMENT                 = "Level";
+		public const string BOARD_ELEMENT                = "Board";
+		public const string INVENTORY_ELEMENT            = "Inventory";
+		public const string ROW_ELEMENT                  = "Row";
+		public const string EMPTY_ROW_ELEMENT            = "EmptyRow";
+		public const string EMPTY_ELEMENT                = "Empty";
+		public const string OUTPUTTER_ELEMENT            = "Outputter";
+		public const string RECEIVER_ELEMENT             = "Receiver";
+		public const string TILE_ELEMENT                 = "Tile";
+		public const string DEACTIVATE_REMAINING_ELEMENT = "DeactivateRemaining";
+        public const string LOAD_TUTORIAL_ELEMENT        = "LoadTutorial";
 
-		public const string BOARD_ELEMENT = "Board";
+        #endregion
 
-		public const string INVENTORY_ELEMENT = "Inventory";
+        #region XmlAttribute Names
 
-		public const string ROW_ELEMENT = "Row";
-
-		public const string EMPTY_ROW_ELEMENT = "EmptyRow";
-
-		public const string EMPTY_ELEMENT = "Empty";
-
-		public const string OUTPUTTER_ELEMENT = "Outputter";
-
-		public const string RECEIVER_ELEMENT = "Receiver";
-
-		public const string TILE_ELEMENT = "Tile";
-
-		public const string INACTIVATE_REMAINING_ELEMENT = "InactivateRemaining";
-
-		public const string OPEN_ATTRIBUTE = "Open";
-
-		public const string TYPE_ATTRIBUTE = "Type";
-
+        public const string OPEN_ATTRIBUTE      = "Open";
+		public const string TYPE_ATTRIBUTE      = "Type";
 		public const string DIRECTION_ATTRIBUTE = "Direction";
+		public const string COLOUR_ATTRIBUTE    = "Colour";
+		public const string COUNT_ATTRIBUTE     = "Count";
 
-		public const string COLOUR_ATTRIBUTE = "Colour";
+        #endregion
 
-		public const string COUNT_ATTRIBUTE = "Count";
+        #region Xml Document Loading Constants
 
-		public const string INFINITE_COUNT_ATTRIBUTE_VAL = "infinite";
+        public const string INFINITE_COUNT_ATTRIBUTE_VAL = "infinite";
 
 		public const int INDETERMINATE_ROW_WIDTH = -1;
 
@@ -367,10 +395,11 @@ namespace Refraction_V2.Multiforms.Level
 				Error_UnexpectedRootNodeName(root.Name);
 
 			// There should only be a Board element and an Inventory element.
-			if (root.ChildNodes.Count != 2)
+            // There can also be an additional LoadTutorial node.
+			if (root.ChildNodes.Count != 2 && root.ChildNodes.Count != 3)
 				Error_UnexpectedRootChildrenCount();
 
-            bool boardLoaded = false, inventoryLoaded = false;
+            bool boardLoaded = false, inventoryLoaded = false, tutorialAdded = false;
 
             foreach (var child in root.ChildElements())
             {
@@ -384,8 +413,22 @@ namespace Refraction_V2.Multiforms.Level
 					LoadInventory(child);
 					inventoryLoaded = true;
 				}
+                else if (child.Name == LOAD_TUTORIAL_ELEMENT && !tutorialAdded)
+                {
+                    LoadTutorial(child);
+                    tutorialAdded = true;
+                }
 				else
 					Error_UnexpectedRootChildren();
+            }
+
+            if (!boardLoaded)
+            {
+                Error_NoBoardElement();
+            }
+            if (!inventoryLoaded)
+            {
+                Warn_EmptyInventory();
             }
         }
 
@@ -518,13 +561,7 @@ namespace Refraction_V2.Multiforms.Level
                         currentRow.Add(ReadEmptyTileElement(child));
                         break;
                     case TILE_ELEMENT:
-                        currentRow.Add(ReadTileElement(child, TILE_ELEMENT));
-                        break;
-                    case OUTPUTTER_ELEMENT:
-                        currentRow.Add(ReadTileElement(child, OUTPUTTER_ELEMENT));
-                        break;
-                    case RECEIVER_ELEMENT:
-                        currentRow.Add(ReadTileElement(child, RECEIVER_ELEMENT));
+                        currentRow.Add(ReadTileElement(child));
                         break;
                     default:
 						Error_InvalidBoardTileElement(child.Name);
@@ -572,48 +609,66 @@ namespace Refraction_V2.Multiforms.Level
 		/// "<Outputter>", or "<Receiver>", where the string "type" parameter
 		/// determines which of the three it is.
 		/// </summary>
-        private TileInfo ReadTileElement(XmlElement tile, string type)
+        private TileInfo ReadTileElement(XmlElement tile)
         {
-			// A <Tile> element must have a "Type" attribute to determine what type of tile it is.
-			if (type == TILE_ELEMENT && !tile.HasAttribute(TYPE_ATTRIBUTE))
-				Error_NoTypeAttribute();
-			// <Outputter> and <Receiver> elements must have both "Colour" and "Direction" attributes
-			else if ((type == OUTPUTTER_ELEMENT || type == RECEIVER_ELEMENT) && 
-					 (!tile.HasAttribute(COLOUR_ATTRIBUTE) || !tile.HasAttribute(DIRECTION_ATTRIBUTE)))
-				Error_NoColourOrDirectionAttribute(type.ToLower());
-
-			// The tileName is just the name of the TileType Enum value the element
-			// corresponds to.
-            string tileName;
-            if (type == TILE_ELEMENT)
-                tileName = tile.GetAttribute(TYPE_ATTRIBUTE);
-            else
-                tileName = type;
+            var tileName = tile.GetAttribute(TYPE_ATTRIBUTE);
 
             TileType tileType;
             var success = Enum.TryParse<TileType>(tileName, out tileType);
-			if (!success)
-				Error_InvalidAttributeValue("tile type", tile.GetAttribute(TYPE_ATTRIBUTE));
+            if (!success)
+            {
+                Error_InvalidAttributeValue("tile type", tile.GetAttribute(TYPE_ATTRIBUTE));
+            }
 
             // All non-empty tiles initially specified in the level file are closed to
             // prevent the player overwriting them.
             var tileInfo = new TileInfo(tileType, false);
 
-			// If the tile is an outputter or a receiver, add in the direction and colour attributes.
-            if (type != TILE_ELEMENT)
+            foreach (var attr in tile.Attributes.Cast<XmlAttribute>())
             {
-				if (!Directions.DirectionsByName.ContainsKey(tile.GetAttribute(DIRECTION_ATTRIBUTE)))
-					Error_InvalidAttributeValue("direction", tile.GetAttribute(DIRECTION_ATTRIBUTE));
+                switch(attr.Name)
+                {
+                    case DIRECTION_ATTRIBUTE:
+                        if (!Directions.DirectionsByName.ContainsKey(attr.InnerText))
+                            Error_InvalidAttributeValue("direction", attr.InnerText);
 
-				var direction = Directions.DirectionsByName[tile.GetAttribute(DIRECTION_ATTRIBUTE)];
-                tileInfo.SetAttr<Directions>(DIRECTION_ATTRIBUTE, direction);
+                        var direction = Directions.DirectionsByName[attr.InnerText];
+                        tileInfo.SetAttr<Directions>(attr.Name, direction);
+                        break;
+                    case COLOUR_ATTRIBUTE:
+                        if (!LaserColours.ColoursByName.ContainsKey(attr.InnerText))
+					        Error_InvalidAttributeValue("colour", attr.InnerText);
 
-				if (!LaserColours.ColoursByName.ContainsKey(tile.GetAttribute(COLOUR_ATTRIBUTE)))
-					Error_InvalidAttributeValue("colour", tile.GetAttribute(COLOUR_ATTRIBUTE));
-
-				var colour = LaserColours.ColoursByName[tile.GetAttribute(COLOUR_ATTRIBUTE)];
-                tileInfo.SetAttr<LaserColours>(COLOUR_ATTRIBUTE, colour);
+				        var colour = LaserColours.ColoursByName[attr.InnerText];
+                        tileInfo.SetAttr<LaserColours>(attr.Name, colour);
+                        break;
+                    default:
+                        break;
+                }
             }
+
+            // Check to ensure a tile of a specific type has the required
+            // attributes.
+            switch (tileType)
+            {
+                case TileType.Outputter:
+                case TileType.Receiver:
+                    if (!tileInfo.HasAttr<LaserColours>(COLOUR_ATTRIBUTE) ||
+                        !tileInfo.HasAttr<Directions>(DIRECTION_ATTRIBUTE))
+                        Error_NoColourOrDirectionAttribute(tileName.ToLower());
+                    break;
+                case TileType.OpenReceiver:
+                case TileType.OpenReceiver_pass_L:
+                case TileType.OpenReceiver_pass_U:
+                case TileType.OpenReceiver_pass_UL:
+                case TileType.OpenReceiver_pass_UR:
+                    if (!tileInfo.HasAttr<LaserColours>(COLOUR_ATTRIBUTE))
+                        Error_NoColourOrDirectionAttribute(tileName.ToLower());
+                    break;
+                default:
+                    break;
+            }
+
             return tileInfo;
         }
 
@@ -663,7 +718,7 @@ namespace Refraction_V2.Multiforms.Level
 					Inventory[tileType] = count;
 					seenTiles.Add(tileType);
 				}
-				else if (child.Name == INACTIVATE_REMAINING_ELEMENT)
+				else if (child.Name == DEACTIVATE_REMAINING_ELEMENT)
 				{
 					inactivateRemaining = true;
 					break;
@@ -684,6 +739,19 @@ namespace Refraction_V2.Multiforms.Level
 					InactiveInventory.Add(tile);
 				}
 			}
+        }
+
+        private void LoadTutorial(XmlElement element)
+        {
+            try
+            {
+                TutorialNumber = Convert.ToInt32(element.InnerText);
+            }
+            catch (FormatException)
+            {
+                TutorialNumber = null;
+                Warn_CouldntParseTutorialNumber(element.InnerText);
+            }
         }
 
     }

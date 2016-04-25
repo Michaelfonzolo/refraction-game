@@ -73,8 +73,15 @@ namespace Refraction_V2.Multiforms.LevelLoad
 
         #region Form Property Constants and Messages
 
+        /// <summary>
+        /// The height of the gap between two consecutive plain text messages or two consecutive
+        /// error/warning messages.
+        /// </summary>
         private const int MESSAGE_LINE_GAP = 50;
 
+        /// <summary>
+        /// The height of the gap inbetween plain text messages and error/warning messages.
+        /// </summary>
         private const int ERROR_WARNING_GAP = 100;
 
         /// <summary>

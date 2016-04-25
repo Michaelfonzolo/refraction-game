@@ -165,8 +165,7 @@ namespace Refraction_V2.Multiforms.LevelComplete
 
             RegisterForm(new ClickParticleSpawnerForm());
 
-			SetUpdater(Update_Main);
-			SetRenderer(Render_Main);
+            FadeIn(20, Color.White, Update_Main, Render_Main);
 		}
 
 		/// <summary>
@@ -239,8 +238,6 @@ namespace Refraction_V2.Multiforms.LevelComplete
         /// <param name="increment"></param>
         public void ReturnToLevel(int increment)
 		{
-			Manager.Close(this);
-
 			var data = new MultiformTransmissionData(MultiformName);
 
 			if (increment == NEXT_LEVEL)
@@ -248,10 +245,9 @@ namespace Refraction_V2.Multiforms.LevelComplete
 			else if (increment == PREV_LEVEL)
 				LevelNameInfo.DecrementLevel();
 
-			data.SetAttr<LevelNameInfo>("LevelNameInfo", LevelNameInfo);
-			Manager.Construct(LevelLoadMultiform.MultiformName, data);
-
-			ClearForms();
+            data.SetAttr<LevelNameInfo>("LevelNameInfo", LevelNameInfo);
+            FadeOutAndClose(20, Color.White, LevelLoadMultiform.MultiformName,
+                data, false, () => { UpdateForms(); }, () => { RenderForms(); });
 		}
 
 		public void Update_Main()

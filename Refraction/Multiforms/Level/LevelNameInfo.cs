@@ -58,7 +58,6 @@ namespace Refraction_V2.Multiforms.Level
 			}
 		}
 
-
 		/// <summary>
 		/// Whether or not this level is part of the sequential listing of levels,
 		/// or is just the name of a file to load.

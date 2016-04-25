@@ -201,11 +201,19 @@ namespace Refraction_V2
             {
                 public static readonly string AssetName_InventoryItem = Path.Combine("Level", "Fonts", "InventoryItem");
 
-                public static readonly string AssetName_PauseText = Path.Combine("Level", "Fonts", "PauseText");
+                public static readonly string AssetName_PauseMessage = Path.Combine("Level", "Fonts", "PauseMessage");
+
+                public static readonly string AssetName_TutorialMessage_Large = Path.Combine("Level", "Fonts", "TutorialMessage_Large");
+
+                public static readonly string AssetName_TutorialMessage_Small = Path.Combine("Level", "Fonts", "TutorialMessage_Small");
             
                 public static readonly SpriteFont InventoryItem = ArtManager.Font(AssetName_InventoryItem);
 
-                public static readonly SpriteFont PauseText = ArtManager.Font(AssetName_PauseText);
+                public static readonly SpriteFont PauseMessage = ArtManager.Font(AssetName_PauseMessage);
+
+                public static readonly SpriteFont TutorialMessage_Large = ArtManager.Font(AssetName_TutorialMessage_Large);
+
+                public static readonly SpriteFont TutorialMessage_Small = ArtManager.Font(AssetName_TutorialMessage_Small);
             }            
         }
 
@@ -267,11 +275,15 @@ namespace Refraction_V2
 
                 public static readonly string AssetName_UnclearedLevelButton = Path.Combine("LevelSelect", "Images", "UnclearedLevelButton");
 
+                public static readonly string AssetName_LockedLevelButton = Path.Combine("LevelSelect", "Images", "LockedLevelButton");
+
                 public static readonly Texture2D BackButton = ArtManager.Texture2D(AssetName_BackButton);
 
                 public static readonly Texture2D ClearedLevelButton = ArtManager.Texture2D(AssetName_ClearedLevelButton);
 
                 public static readonly Texture2D UnclearedLevelButton = ArtManager.Texture2D(AssetName_UnclearedLevelButton);
+
+                public static readonly Texture2D LockedLevelButton = ArtManager.Texture2D(AssetName_LockedLevelButton);
             }
 
             public static class Fonts

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <GameSetup>
   <ContentFolder>Content</ContentFolder>
-  <WindowResolution>960x768</WindowResolution>
-
+  <!-- <WindowResolution>960x768</WindowResolution> -->
+  <WindowResolution>960x620</WindowResolution>
   <Fullscreen>false</Fullscreen>
   <AllowFullscreen>true</AllowFullscreen>
 
@@ -14,4 +14,6 @@
 
   <!-- Alternative background colour : 0x02091f -->
   <BackgroundFillColour>Black</BackgroundFillColour>
+
+  <VSync>true</VSync>
 </GameSetup>

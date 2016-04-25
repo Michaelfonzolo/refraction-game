@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Level>
+	<Board>
+		<Row>
+      <Tile Type="Outputter" Direction="Up" Colour="Red"/>
+      <Empty Open="False"/>
+      <Empty Open="False"/>
+      <Empty Open="False"/>
+      <Tile Type="Outputter" Direction="Up" Colour="Blue"/>
+		</Row>
+    <EmptyRow Open="False"/>
+    <Row>
+      <Empty/>
+      <Empty Open="False"/>
+      <Empty Open="False"/>
+      <Empty Open="False"/>
+      <Empty/>
+    </Row>
+    <Row>
+      <Empty/>
+      <Empty Open="False"/>
+      <Empty Open="False"/>
+      <Empty Open="False"/>
+      <Empty/>
+    </Row>
+    <Row>
+      <Empty/>
+      <Empty Open="False"/>
+      <Empty Open="False"/>
+      <Empty Open="False"/>
+      <Empty/>
+    </Row>
+    <EmptyRow Open="False"/>
+		<Row>
+			<Tile Type="Receiver" Direction="UpLeft" Colour="Blue"/>
+      <Empty Open="False"/>
+      <Empty Open="False"/>
+      <Empty Open="False"/>
+      <Tile Type="Receiver" Direction="UpRight" Colour="Red"/>
+		</Row>
+	</Board>
+	<Inventory>
+    <Tile Type="RF_UxL_UL" Count="Infinite"/>
+		<Tile Type="RF_UxR_UR" Count="Infinite"/>
+		<DeactivateRemaining/>
+	</Inventory>
+  <LoadTutorial>1</LoadTutorial>
+</Level>

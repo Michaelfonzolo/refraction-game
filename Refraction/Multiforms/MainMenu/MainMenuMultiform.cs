@@ -59,6 +59,8 @@ namespace Refraction_V2.Multiforms.MainMenu
 
         private static readonly Random Random = new Random();
 
+        private static readonly bool SKIP_ANIMATIONS = false;
+
         #region Form Names
 
         /// <summary>
@@ -167,24 +169,43 @@ namespace Refraction_V2.Multiforms.MainMenu
             if (GetForm<GUIButton>(PlayButtonFormName).IsReleased(MouseButtons.Left) ||
                 (releasedButton == 0 && KeyboardInput.IsReleased(Keys.Enter)))
             {
+                if (SKIP_ANIMATIONS)
+                {
+                    FadeOutAndClose(20, Color.White, LevelSelectMultiform.MultiformName, null,
+                        true, () => { UpdateForms(); }, () => { RenderForms(); });
+                    return;
+                }
+
                 PrepareOnButtonClick(
                     Update_OnPlayButtonClick, Render_OnPlayButtonClick,
                     OnPlayButtonClickAnimationFormName, new PlayAnimationForm(PlayButtonCenter),
                     1, 1, PlayButtonFormName, OptionsButtonFormName, CreditsButtonFormName);
             }
-
             else if (GetForm<GUIButton>(OptionsButtonFormName).IsReleased(MouseButtons.Left) ||
                 (releasedButton == 1 && KeyboardInput.IsReleased(Keys.Enter)))
             {
+                if (SKIP_ANIMATIONS)
+                {
+                    FadeOutAndClose(20, Color.White, LevelSelectMultiform.MultiformName, null,
+                        true, () => { UpdateForms(); }, () => { RenderForms(); });
+                    return;
+                }
+
                 PrepareOnButtonClick(
                     Update_OnOptionsButtonClick, Render_OnOptionsButtonClick,
                     OnOptionsButtonClickAnimationFormName, new OptionsAnimationForm(PlayButtonCenter),
                     20, 2.2f, OptionsButtonFormName, PlayButtonFormName, CreditsButtonFormName);
             }
-
             else if (GetForm<GUIButton>(CreditsButtonFormName).IsReleased(MouseButtons.Left) ||
                 (releasedButton == 2 && KeyboardInput.IsReleased(Keys.Enter)))
             {
+                if (SKIP_ANIMATIONS)
+                {
+                    FadeOutAndClose(20, Color.White, LevelSelectMultiform.MultiformName, null,
+                        true, () => { UpdateForms(); }, () => { RenderForms(); });
+                    return;
+                }
+
                 PrepareOnButtonClick(
                     Update_OnCreditsButtonClick, Render_OnCreditsButtonClick,
                     OnCreditsButtonClickAnimationFormName, new CreditsAnimationForm(PlayButtonCenter),
@@ -207,6 +228,7 @@ namespace Refraction_V2.Multiforms.MainMenu
             Action updater, Action renderer, string animationName, Form animation, 
             int floatDuration, float floatTension, string mainButton, params string[] otherButtons)
         {
+
             // Resetting the timer makes it easier to align time based events in the
             // transition-out, since it's easier to let the initial time be zero than
             // it is to be anything else.

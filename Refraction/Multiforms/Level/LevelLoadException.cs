@@ -42,7 +42,7 @@ namespace Refraction_V2.Multiforms.Level
     public class LevelLoadException : Exception
     {
         public LevelLoadException() : base() { }
-        public LevelLoadException(string msg) : base("Invalid level file format; " + msg) { }
-        public LevelLoadException(string msg, Exception inner) : base("Invalid level file format; " + msg, inner) { }
+        public LevelLoadException(string msg) : base(msg) { }
+        public LevelLoadException(string msg, Exception inner) : base(msg, inner) { }
     }
 }

@@ -50,13 +50,11 @@ namespace Refraction_V2
 
         #region Xml Element Name Constants
 
-        private const string COMPLETED_LEVELS_ELEMENT = "CompletedLevels";
-
         private const string HIGHEST_UNLOCKED_LEVEL_ELEMENT = "HighestUnlockedLevel";
 
 		private const string LEVEL_FOLDER = "Levels";
 
-		private const string LEVEL_FOLDER_SEARCH_PATTERN = "*.levelfile";
+		private const string LEVEL_FOLDER_SEARCH_PATTERN = "*.level";
 
         #endregion
 
@@ -65,15 +63,10 @@ namespace Refraction_V2
 		/// </summary>
 		internal static string[] SequentialLevels { get; private set; }
 
-		/// <summary>
-		/// The list of levels the player has completed.
-		/// </summary>
-		internal readonly static HashSet<int> CompletedLevels = new HashSet<int>();
-
         /// <summary>
         /// The number of the highest unlocked level.
         /// </summary>
-        internal static int HighestUnlockedLevel { get; private set; }
+        internal static int HighestUnlockedLevel { get; set; }
 
 		private static int LevelToInt(string levelName)
 		{
@@ -95,34 +88,12 @@ namespace Refraction_V2
 
 			var roots                 = doc.ChildNodes;
 			var configElement         = roots[1] as XmlElement;
-			var completedLevelElement = configElement.FindChild(COMPLETED_LEVELS_ELEMENT);
-
-			foreach (var num in completedLevelElement.InnerText.Trim().Split(' '))
-			{
-                // This only ever occurs when the user hasn't completed a single level,
-                // which in turn cases the "CompletedLevels" element to get written as 
-                // a terminal element (<CompletedLevels/>) with no actual inner text.
-                if (num == "")
-                    continue;
-				CompletedLevels.Add(Convert.ToInt32(num.Trim()));
-			}
-
             HighestUnlockedLevel = Convert.ToInt32(
                 configElement.FindChild(HIGHEST_UNLOCKED_LEVEL_ELEMENT).InnerText);
 		}
 
 		internal static void Close(XmlWriter writer)
 		{
-			var completedLevelsText = new StringBuilder();
-
-			int i = 0;
-			foreach (var levelNum in LoadedLevelManager.CompletedLevels)
-			{
-				i++;
-				completedLevelsText.Append(levelNum.ToString() + " ");
-			}
-
-			writer.WriteElementString(COMPLETED_LEVELS_ELEMENT, completedLevelsText.ToString());
             writer.WriteElementString(HIGHEST_UNLOCKED_LEVEL_ELEMENT, HighestUnlockedLevel.ToString());
 		}
 	}

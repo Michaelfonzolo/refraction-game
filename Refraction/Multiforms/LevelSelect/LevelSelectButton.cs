@@ -41,6 +41,8 @@ using DemeterEngine.Multiforms.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+using System;
+
 #endregion
 
 namespace Refraction_V2.Multiforms.LevelSelect
@@ -106,18 +108,20 @@ namespace Refraction_V2.Multiforms.LevelSelect
 
         private static double GetAlpha(double yPos)
         {
-            if (yPos < OFFSET || yPos > 768 - 100)
+            if (yPos < OFFSET || yPos > DisplayManager.WindowHeight - 100)
                 return 0d;
             else if (yPos < 40)
                 return (yPos + 50) / 90d;
-            else if (yPos < 768 - 200)
+            else if (yPos < DisplayManager.WindowHeight - 200)
                 return 1d;
-            else if (yPos < 768 - 100)
-                return (768 - 100 - yPos) / 100d;
+            else if (yPos < DisplayManager.WindowHeight - 100)
+                return (DisplayManager.WindowHeight - 100 - yPos) / 100d;
             return 0;
         }
 
         #endregion
+
+        private bool unlockedLevel = true;
 
 		public LevelSelectButton(RectCollider collider, LevelSelectScrollBar scrollBar, int levelNo)
 			: base(collider)
@@ -125,13 +129,19 @@ namespace Refraction_V2.Multiforms.LevelSelect
 			LevelNo = levelNo;
             ScrollBar = scrollBar;
 
-            if (LoadedLevelManager.CompletedLevels.Contains(levelNo))
+            if (LoadedLevelManager.HighestUnlockedLevel == levelNo)
+            {
+                ButtonSprite = new Sprite(Assets.LevelSelect.Images.UnclearedLevelButton);
+            }
+            else if (LoadedLevelManager.HighestUnlockedLevel > levelNo)
             {
                 ButtonSprite = new Sprite(Assets.LevelSelect.Images.ClearedLevelButton);
             }
             else
             {
-                ButtonSprite = new Sprite(Assets.LevelSelect.Images.UnclearedLevelButton);
+                ButtonSprite = new Sprite(Assets.LevelSelect.Images.LockedLevelButton);
+                LockInteraction();
+                unlockedLevel = false;
             }
 			LevelNoFont  = Assets.LevelSelect.Fonts.LevelNo;
 
@@ -142,13 +152,16 @@ namespace Refraction_V2.Multiforms.LevelSelect
 
         public override void Update()
         {
-            if (GetAlpha(((RectCollider)Collider).Top) < 0.5)
+            if (unlockedLevel)
             {
-                LockInteraction();
-            }
-            else
-            {
-                UnlockInteraction();
+                if (GetAlpha(((RectCollider)Collider).Top) < 0.5)
+                {
+                    LockInteraction();
+                }
+                else
+                {
+                    UnlockInteraction();
+                }
             }
 
             base.Update();
@@ -170,7 +183,10 @@ namespace Refraction_V2.Multiforms.LevelSelect
 		{
             var position = ((RectCollider)Collider).TopLeft;
 
-            ButtonSprite.Tint = CollidingWithMouse ? Color.Red : Color.White;
+            if (!Locked)
+            {
+                ButtonSprite.Tint = CollidingWithMouse ? Color.Red : Color.White;
+            }
             ButtonSprite.Alpha = 255 * GetAlpha(position.Y);
 
 			ButtonSprite.Render(position);
